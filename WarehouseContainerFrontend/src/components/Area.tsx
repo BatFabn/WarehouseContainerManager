@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 interface Props {
   id: string;
 }
@@ -31,9 +33,9 @@ const Room = ({ id }: Props) => {
               </ul>
             </div>
             <div className="hstack gap-3">
-              <a className="icon-link" href="/container">
+              <Link className="icon-link" to="/container">
                 Go to
-              </a>
+              </Link>
               <button type="button" className="btn btn-danger ms-auto">
                 Stop
               </button>
@@ -68,12 +70,9 @@ const Room = ({ id }: Props) => {
             </ul>
           </div>
           <div className="hstack gap-3">
-            <a className="icon-link" href="#">
-              <svg className="bi" aria-hidden="true">
-                <use xlinkHref="#box-seam"></use>
-              </svg>
+            <Link className="icon-link" to="#">
               Go to
-            </a>
+            </Link>
             <button type="button" className="btn btn-danger ms-auto">
               Stop
             </button>
@@ -107,12 +106,12 @@ const Room = ({ id }: Props) => {
             </ul>
           </div>
           <div className="hstack gap-3">
-            <a className="icon-link" href="#">
+            <Link className="icon-link" to="#">
               <svg className="bi" aria-hidden="true">
                 <use xlinkHref="#box-seam"></use>
               </svg>
               Go to
-            </a>
+            </Link>
             <button type="button" className="btn btn-danger ms-auto">
               Stop
             </button>
