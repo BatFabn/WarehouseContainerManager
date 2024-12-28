@@ -5,7 +5,6 @@ import Dashboard from "./components/Dashboard";
 
 const router = createBrowserRouter([
   {
-    path: "/",
     children: [
       { path: "/", element: <App /> },
       { path: "/dashboard", element: <Dashboard verified={() => {}} /> },
