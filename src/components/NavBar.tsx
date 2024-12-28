@@ -1,4 +1,8 @@
-const NavBar = () => {
+interface Props {
+  verified: () => void;
+}
+
+const NavBar = ({ verified }: Props) => {
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid ">
@@ -24,7 +28,7 @@ const NavBar = () => {
             <a className="nav-link" href="#">
               Members
             </a>
-            <a className="nav-link disabled" aria-disabled="true">
+            <a className="nav-link text-danger" href="" onClick={verified}>
               Log out
             </a>
           </div>

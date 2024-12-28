@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import AnimatedText from "./AnimatedText";
 
-const LoginPage: React.FC = () => {
+interface Props {
+  verified: () => void;
+}
+
+const LoginPage = ({ verified }: Props) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
@@ -19,6 +23,7 @@ const LoginPage: React.FC = () => {
     console.log("Email:", email);
     console.log("Password:", password);
     alert("Login successful!");
+    verified();
   };
 
   return (

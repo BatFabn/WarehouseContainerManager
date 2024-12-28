@@ -2,10 +2,14 @@ import NavBar from "./NavBar";
 import Room from "./Room";
 import StopAllButton from "./StopAllButton";
 
-const Dashboard = () => {
+interface Props {
+  verified: () => void;
+}
+
+const Dashboard = ({ verified }: Props) => {
   return (
     <div>
-      <NavBar />
+      <NavBar verified={verified} />
       <div className="container overflow-hidden text-center p-5">
         <div className="row g-5">
           <div className="col-6 bg-secondary text-white p-4">
