@@ -31,10 +31,7 @@ const Room = ({ id }: Props) => {
               </ul>
             </div>
             <div className="hstack gap-3">
-              <a className="icon-link" href="#">
-                <svg className="bi" aria-hidden="true">
-                  <use xlinkHref="#box-seam"></use>
-                </svg>
+              <a className="icon-link" href="/container">
                 Go to
               </a>
               <button type="button" className="btn btn-danger ms-auto">

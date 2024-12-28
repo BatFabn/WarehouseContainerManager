@@ -1,5 +1,5 @@
 import NavBar from "./NavBar";
-import Room from "./Area";
+import Area from "./Area";
 import StopAllButton from "./StopAllButton";
 
 interface Props {
@@ -13,7 +13,7 @@ const Dashboard = ({ verified }: Props) => {
       <div className="container overflow-hidden text-center p-5">
         <div className="row g-5">
           <div className="col-6 bg-secondary text-white p-4">
-            <Room id="room1" />
+            <Area id="room1" />
             <div className="p-3 fs-3">Area #1</div>
             <div className="hstack px-5">
               <StopAllButton />
@@ -23,7 +23,7 @@ const Dashboard = ({ verified }: Props) => {
             </div>
           </div>
           <div className="col-6 bg-secondary text-white p-4">
-            <Room id="room2" />
+            <Area id="room2" />
             <div className="p-3 fs-3">Area #2</div>
             <div className="hstack px-5">
               <StopAllButton />
@@ -33,7 +33,7 @@ const Dashboard = ({ verified }: Props) => {
             </div>
           </div>
           <div className="col-6 bg-secondary text-white p-4">
-            <Room id="room3" />
+            <Area id="room3" />
             <div className="p-3 fs-3">Area #3</div>
             <div className="hstack px-5">
               <StopAllButton />
@@ -43,7 +43,7 @@ const Dashboard = ({ verified }: Props) => {
             </div>
           </div>
           <div className="col-6 bg-secondary text-white p-4">
-            <Room id="room4" />
+            <Area id="room4" />
             <div className="p-3 fs-3">Area #4</div>
             <div className="hstack px-5">
               <StopAllButton />

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Dashboard from "./components/Dashboard";
 import LoginPage from "./components/LoginPage";
-import ContainerPage from "./components/ContainerPage";
 
 const App: React.FC = () => {
   const [login, setLogin] = useState(false);
@@ -12,7 +11,6 @@ const App: React.FC = () => {
   return (
     <div>
       {!login && <LoginPage verified={verified} />}
-      {login && <ContainerPage verified={verified} />}
       {login && <Dashboard verified={verified} />}
     </div>
   );
