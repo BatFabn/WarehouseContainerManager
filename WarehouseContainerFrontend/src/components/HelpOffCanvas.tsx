@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Offcanvas } from "bootstrap";
 
-function StopAllButton() {
+function HelpOffCanvas() {
   let offcanvasInstance: Offcanvas | null = null;
 
   useEffect(() => {
@@ -26,8 +26,8 @@ function StopAllButton() {
 
   return (
     <div>
-      <button className="btn btn-danger" onClick={openOffcanvas}>
-        Stop All
+      <button className="btn btn-secondary" onClick={openOffcanvas}>
+        Help
       </button>
 
       <div
@@ -38,7 +38,7 @@ function StopAllButton() {
       >
         <div className="offcanvas-header">
           <h5 className="offcanvas-title" id="offcanvasTopLabel">
-            Offcanvas top
+            Help
           </h5>
           <button
             type="button"
@@ -48,24 +48,23 @@ function StopAllButton() {
           ></button>
         </div>
         <div className="offcanvas-body">
-          <div className="alert alert-danger" role="alert">
-            Are you sure you want to stop all containers in Area #?
+          <div className="d-flex justify-content-around">
+            <div className="alert alert-success" role="alert">
+              Container #
+            </div>
+            - Good condition
           </div>
-          <div className="hstack d-flex justify-content-center gap-2">
-            <button
-              className="btn btn-primary"
-              type="button"
-              onClick={closeOffcanvas}
-            >
-              Yes
-            </button>
-            <button
-              className="btn btn-secondary"
-              type="button"
-              onClick={closeOffcanvas}
-            >
-              No
-            </button>
+          <div className="d-flex justify-content-around">
+            <div className="alert alert-warning" role="alert">
+              Container #
+            </div>
+            - Spoilage detected
+          </div>
+          <div className="d-flex justify-content-around">
+            <div className="alert alert-danger" role="alert">
+              Container #
+            </div>
+            - Spoilt
           </div>
         </div>
       </div>
@@ -73,4 +72,4 @@ function StopAllButton() {
   );
 }
 
-export default StopAllButton;
+export default HelpOffCanvas;
