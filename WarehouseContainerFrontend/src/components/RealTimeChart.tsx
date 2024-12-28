@@ -19,7 +19,7 @@ ChartJS.register(
   Tooltip
 );
 
-const socket: Socket = io("http://localhost:3001"); // Connect to the server
+const socket: Socket = io("https://warehousecontainermanager.onrender.com"); // Connect to the server
 
 // Define the structure of chart data
 interface ChartData {
