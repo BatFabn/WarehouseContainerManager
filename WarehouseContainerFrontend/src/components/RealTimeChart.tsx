@@ -74,7 +74,7 @@ const RealTimeGraph: React.FC = () => {
   }, []);
 
   return (
-    <div className="container">
+    <div className="container bg-dark">
       <h2>Real-Time Graph</h2>
       <Line
         data={data}

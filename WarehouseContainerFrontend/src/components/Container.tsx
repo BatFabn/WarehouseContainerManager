@@ -16,7 +16,7 @@ const Room = ({ id }: Props) => {
             aria-expanded="false"
             aria-controls={`collapse-${id}1`}
           >
-            Container #
+            Rack #
           </button>
         </h2>
         <div
@@ -33,7 +33,7 @@ const Room = ({ id }: Props) => {
               </ul>
             </div>
             <div className="hstack gap-3">
-              <Link className="icon-link" to="/container">
+              <Link className="icon-link" to="/rack">
                 Go to
               </Link>
               <button type="button" className="btn btn-danger ms-auto">
@@ -54,7 +54,7 @@ const Room = ({ id }: Props) => {
             aria-expanded="false"
             aria-controls={`collapse-${id}2`}
           >
-            Container #
+            Rack #
           </button>
         </h2>
         <div
@@ -70,7 +70,7 @@ const Room = ({ id }: Props) => {
             </ul>
           </div>
           <div className="hstack gap-3">
-            <Link className="icon-link" to="#">
+            <Link className="icon-link" to="/rack">
               Go to
             </Link>
             <button type="button" className="btn btn-danger ms-auto">
@@ -90,7 +90,7 @@ const Room = ({ id }: Props) => {
             aria-expanded="false"
             aria-controls={`collapse-${id}3`}
           >
-            Container #
+            Rack #
           </button>
         </h2>
         <div
@@ -106,10 +106,7 @@ const Room = ({ id }: Props) => {
             </ul>
           </div>
           <div className="hstack gap-3">
-            <Link className="icon-link" to="#">
-              <svg className="bi" aria-hidden="true">
-                <use xlinkHref="#box-seam"></use>
-              </svg>
+            <Link className="icon-link" to="/rack">
               Go to
             </Link>
             <button type="button" className="btn btn-danger ms-auto">

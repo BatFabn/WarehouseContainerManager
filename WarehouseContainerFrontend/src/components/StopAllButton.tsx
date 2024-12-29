@@ -6,7 +6,7 @@ function StopAllButton() {
 
   useEffect(() => {
     // Initialize the offcanvas when the component mounts
-    const offcanvasElement = document.getElementById("offcanvasTop");
+    const offcanvasElement = document.getElementById("StopAllButton");
     if (offcanvasElement) {
       offcanvasInstance = new Offcanvas(offcanvasElement);
     }
@@ -33,12 +33,12 @@ function StopAllButton() {
       <div
         className="offcanvas offcanvas-top"
         tabIndex={-1}
-        id="offcanvasTop"
-        aria-labelledby="offcanvasTopLabel"
+        id="StopAllButton"
+        aria-labelledby="StopAllButtonLabel"
       >
         <div className="offcanvas-header">
-          <h5 className="offcanvas-title" id="offcanvasTopLabel">
-            Offcanvas top
+          <h5 className="offcanvas-title" id="StopAllButtonLabel">
+            Alert
           </h5>
           <button
             type="button"
@@ -49,7 +49,7 @@ function StopAllButton() {
         </div>
         <div className="offcanvas-body">
           <div className="alert alert-danger" role="alert">
-            Are you sure you want to stop all containers in Area #?
+            Are you sure you want to stop all containers in Container #?
           </div>
           <div className="hstack d-flex justify-content-center gap-2">
             <button

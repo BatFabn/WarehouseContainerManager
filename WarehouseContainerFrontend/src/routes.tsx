@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
-import ContainerPage from "./components/ContainerPage";
+import RackPage from "./components/RackPage";
 import Dashboard from "./components/Dashboard";
 
 const router = createBrowserRouter([
@@ -8,7 +8,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <App /> },
       { path: "/dashboard", element: <Dashboard verified={() => {}} /> },
-      { path: "/container", element: <ContainerPage verified={() => {}} /> },
+      { path: "/rack", element: <RackPage verified={() => {}} /> },
     ],
   },
 ]);

@@ -6,7 +6,7 @@ function HelpOffCanvas() {
 
   useEffect(() => {
     // Initialize the offcanvas when the component mounts
-    const offcanvasElement = document.getElementById("offcanvasTop");
+    const offcanvasElement = document.getElementById("HelpOffCanvas");
     if (offcanvasElement) {
       offcanvasInstance = new Offcanvas(offcanvasElement);
     }
@@ -33,11 +33,11 @@ function HelpOffCanvas() {
       <div
         className="offcanvas offcanvas-top"
         tabIndex={-1}
-        id="offcanvasTop"
-        aria-labelledby="offcanvasTopLabel"
+        id="HelpOffCanvas"
+        aria-labelledby="HelpOffCanvasLabel"
       >
         <div className="offcanvas-header">
-          <h5 className="offcanvas-title" id="offcanvasTopLabel">
+          <h5 className="offcanvas-title" id="HelpOffCanvasLabel">
             Help
           </h5>
           <button
@@ -50,19 +50,19 @@ function HelpOffCanvas() {
         <div className="offcanvas-body">
           <div className="d-flex justify-content-around">
             <div className="alert alert-success" role="alert">
-              Container #
+              Rack #
             </div>
             - Good condition
           </div>
           <div className="d-flex justify-content-around">
             <div className="alert alert-warning" role="alert">
-              Container #
+              Rack #
             </div>
             - Spoilage detected
           </div>
           <div className="d-flex justify-content-around">
             <div className="alert alert-danger" role="alert">
-              Container #
+              Rack #
             </div>
             - Spoilt
           </div>

@@ -5,14 +5,14 @@ interface Props {
   verified: () => void;
 }
 
-const ContainerPage = ({ verified }: Props) => {
+const RackPage = ({ verified }: Props) => {
   return (
-    <div className="text-center">
+    <div className="text-center bg-success">
       <NavBar verified={verified} />
-      <h1>Container #</h1>
+      <h1>Rack #</h1>
       <RealTimeGraph />
     </div>
   );
 };
 
-export default ContainerPage;
+export default RackPage;
