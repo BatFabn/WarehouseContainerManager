@@ -1,5 +1,6 @@
 from typing import Optional
-from fastapi import FastAPI, File, UploadFile, Form
+from fastapi import FastAPI, File, UploadFile, Form, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from image_predict import process_image
 from num_predict import process_num_inputs
@@ -39,3 +40,13 @@ async def predict(
         image_data = await image.read()
     label = process_data(image_data, metrics)
     return label
+
+
+@app.post('/sensor')
+async def receive_data(request: Request):
+    data = await request.json()
+    result = process_data(None, {
+                          "fruit": 2, "temperature": data["temperature"], "humidity": data["humidity"], "methane": data["methane"]})
+    print(result["metrics"])
+    print(data)
+    return JSONResponse(content={"status": "success", "message": "Data received!"}, status_code=200)
