@@ -1,87 +1,87 @@
 import React, { useEffect, useState } from "react";
-import { Line } from "react-chartjs-2";
 import {
-  Chart as ChartJS,
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
   Tooltip,
-} from "chart.js";
-import io, { Socket } from "socket.io-client";
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
-// Register Chart.js components
-ChartJS.register(
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip
-);
-
-const socket: Socket = io("https://warehousecontainermanager.onrender.com"); // Connect to the server
-
-// Define the structure of chart data
-interface ChartData {
-  labels: string[];
-  datasets: {
-    label: string;
-    data: number[];
-    borderColor: string;
-    backgroundColor: string;
-  }[];
-}
-
-const RealTimeGraph: React.FC = () => {
-  const [data, setData] = useState<ChartData>({
-    labels: [],
-    datasets: [
-      {
-        label: "Live Data",
-        data: [],
-        borderColor: "rgba(75, 192, 192, 1)",
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
-      },
-    ],
-  });
+const RealTimeText: React.FC = () => {
+  const [data, setData] = useState<Record<string, any>>({}); // State to store the received map (key-value pairs)
+  const [chartData, setChartData] = useState<Array<any>>([]); // State for chart data
 
   useEffect(() => {
-    socket.on("newData", (value: number) => {
-      setData((prevData) => {
-        const labels = [...prevData.labels];
-        const datasetData = [...prevData.datasets[0].data];
+    const ws = new WebSocket("ws://localhost:5000/subscribe");
 
-        // Keep only the last 20 data points
-        if (labels.length >= 20) {
-          labels.shift();
-          datasetData.shift();
-        }
+    ws.onopen = () => {
+      console.log("WebSocket connected!");
+    };
 
-        labels.push(new Date().toLocaleTimeString());
-        datasetData.push(value);
+    ws.onmessage = (event) => {
+      console.log("Received:", event.data);
+      const receivedData = JSON.parse(event.data); // Parse the received JSON
+      setData(receivedData); // Update the state with the received map
 
-        return {
+      // Append the relevant data to chartData
+      if (
+        receivedData.temperature !== undefined &&
+        receivedData.humidity !== undefined &&
+        receivedData.methane !== undefined
+      ) {
+        setChartData((prevData) => [
           ...prevData,
-          labels,
-          datasets: [{ ...prevData.datasets[0], data: datasetData }],
-        };
-      });
-    });
+          {
+            name: new Date().toLocaleTimeString(), // Timestamp as X-axis
+            temperature: receivedData.temperature,
+            humidity: receivedData.humidity,
+            methane: receivedData.methane,
+          },
+        ]);
+      }
+    };
+
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket disconnected!");
+    };
 
     return () => {
-      socket.off("newData");
+      ws.close(); // Cleanup the WebSocket connection
     };
   }, []);
 
   return (
-    <div className="container bg-dark">
-      <h2>Real-Time Graph</h2>
-      <Line
-        data={data}
-        options={{ responsive: true, plugins: { legend: { display: true } } }}
-      />
+    <div className="container bg-dark text-white">
+      <h2>Real-Time Data</h2>
+      <ul>
+        {Object.entries(data).map(([key, value]) => (
+          <li key={key}>
+            <strong>{key}</strong>: {value.toString()}
+          </li>
+        ))}
+      </ul>
+      <h3>Graph</h3>
+      <ResponsiveContainer width="100%" height={400}>
+        <LineChart data={chartData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey="temperature" stroke="#8884d8" />
+          <Line type="monotone" dataKey="humidity" stroke="#82ca9d" />
+          <Line type="monotone" dataKey="methane" stroke="#ff7300" />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 };
 
-export default RealTimeGraph;
+export default RealTimeText;

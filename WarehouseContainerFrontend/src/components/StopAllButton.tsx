@@ -49,7 +49,7 @@ function StopAllButton() {
         </div>
         <div className="offcanvas-body">
           <div className="alert alert-danger" role="alert">
-            Are you sure you want to stop all containers in Container #?
+            Are you sure you want to stop all racks in Container #?
           </div>
           <div className="hstack d-flex justify-content-center gap-2">
             <button
