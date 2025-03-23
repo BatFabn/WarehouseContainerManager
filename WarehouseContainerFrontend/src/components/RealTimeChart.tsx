@@ -9,6 +9,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import SuggestedConditions from "./SuggestedConditions";
 
 const RealTimeText: React.FC = () => {
   const [data, setData] = useState<Record<string, any>>({}); // State to store the received map (key-value pairs)
@@ -80,6 +81,7 @@ const RealTimeText: React.FC = () => {
           <Line type="monotone" dataKey="methane" stroke="#ff7300" />
         </LineChart>
       </ResponsiveContainer>
+      <SuggestedConditions />
     </div>
   );
 };
