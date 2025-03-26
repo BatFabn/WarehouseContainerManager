@@ -37,7 +37,7 @@ const NavBar = ({ verified }: Props) => {
               >
                 Home
               </Link>
-              <Link className="nav-link" to="#">
+              <Link className="nav-link" to="/members">
                 Members
               </Link>
               <Link className="nav-link text-danger" to="/" onClick={verified}>
