@@ -14,7 +14,7 @@ interface Group {
   members: Member[];
 }
 
-const MemberManagement: React.FC = () => {
+const MemberManagement = ({ verified }: { verified: () => void }) => {
   const [members, setMembers] = useState<Member[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
   const [name, setName] = useState<string>("");
@@ -54,7 +54,7 @@ const MemberManagement: React.FC = () => {
 
   return (
     <div className="bg-dark text-light rounded">
-      <NavBar verified={() => {}} />
+      <NavBar verified={verified} />
       <h2 className="text-center mb-4">Admin Members Management</h2>
 
       <div className="container card bg-secondary p-3 mb-4">

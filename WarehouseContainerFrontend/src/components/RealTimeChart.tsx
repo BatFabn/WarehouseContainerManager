@@ -11,12 +11,14 @@ import {
 } from "recharts";
 import SuggestedConditions from "./SuggestedConditions";
 
+const webSocketUrl = import.meta.env.VITE_WAREHOUSE_URL || "Connection error";
+
 const RealTimeText: React.FC = () => {
   const [data, setData] = useState<Record<string, any>>({}); // State to store the received map (key-value pairs)
   const [chartData, setChartData] = useState<Array<any>>([]); // State for chart data
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:5000/subscribe");
+    const ws = new WebSocket(webSocketUrl);
 
     ws.onopen = () => {
       console.log("WebSocket connected!");
