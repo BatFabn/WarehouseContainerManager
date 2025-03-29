@@ -1,4 +1,5 @@
 import json
+import os
 from typing import Set
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,7 +9,11 @@ import redis
 
 app = FastAPI()
 
-redis_client = redis.Redis(host='localhost', port=6379, decode_responses=True)
+redis_host = os.getenv("REDIS_HOST", "localhost")
+redis_port = os.getenv("REDIS_PORT", 7860)
+redis_password = os.getenv("REDIS_PASSWORD", None)
+redis_client = redis.Redis(
+    host=redis_host, port=redis_port, password=redis_password, decode_responses=True)
 
 connected_clients: Set[WebSocket] = set()
 
