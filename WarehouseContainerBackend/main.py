@@ -1,4 +1,4 @@
-from fastapi.middleware.cors import CORSMiddleware
+import json
 from typing import Optional
 from fastapi import Body, FastAPI, File, UploadFile, Form, Request, WebSocket
 from fastapi.responses import JSONResponse
@@ -8,8 +8,11 @@ from num_predict import process_num_inputs
 from PIL import Image
 from typing import List
 import io
+import redis
 
 app = FastAPI()
+
+redis_client = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
 
 class Metrics(BaseModel):
@@ -42,7 +45,7 @@ def process_data(image: bytes | None, metrics: Metrics | None):
 @app.post("/predict")
 async def predict(
     image: Optional[Image] = None,
-    # metrics: Optional[dict[str, Metrics]] = None,
+    metrics: Optional[dict[str, Metrics]] = None,
 ):
     if metrics:
         metrics = dict(dict(metrics).get('metrics', None))
@@ -53,7 +56,7 @@ async def predict(
     return label
 
 
-connected_clients: List[WebSocket] = []
+# connected_clients: List[WebSocket] = []
 
 
 @app.post('/sensor')
@@ -65,30 +68,6 @@ async def receive_data(request: Request):
     print(result["metrics"])
     message = result["metrics"]
 
-    for client in connected_clients:
-        await client.send_json({**data, **message})
+    redis_client.publish("sensor_data", json.dumps({**data, **message}))
+
     return JSONResponse(content={"status": "success", "message": "Data received!"}, status_code=200)
-
-
-@app.websocket("/subscribe")
-async def subscribe(websocket: WebSocket):
-    await websocket.accept()
-    print("Client connected!")
-    connected_clients.append(websocket)
-
-    try:
-        while True:
-            await websocket.receive_text()
-    except Exception as e:
-        print(f"Connection error: {e}")
-    finally:
-        connected_clients.remove(websocket)
-        print("Client disconnected!")
-
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)

@@ -7,15 +7,18 @@ name = "pypi"
 scikit-learn = "*"
 pandas = "*"
 fastapi = "*"
-uvicorn = "*"
 pillow = "*"
 python-multipart = "*"
-torch = "*"
-torchvision = "*"
 ultralytics = "*"
 opencv-python = "*"
+redis = "*"
+uvicorn = {extras = ["standard"], version = "*"}
 
 [dev-packages]
+httpx = "*"
 
 [requires]
 python_version = "3.12"
+
+[pipenv]
+allow_prereleases = true
