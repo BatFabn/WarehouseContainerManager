@@ -1,3 +1,5 @@
 [build]
-  command = "apt-get update && apt-get install -y libxi-dev libx11-dev libxext-dev && npm install && npm run build"
-  node_version = "18"
+command = "apt-get update && apt-get install -y libxi-dev libx11-dev libxext-dev pkg-config && npm install && npm run build"
+
+[build.environment]
+NODE_VERSION = "20"
