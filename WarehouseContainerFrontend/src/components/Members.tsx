@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Trash } from "lucide-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import NavBar from "./NavBar";
