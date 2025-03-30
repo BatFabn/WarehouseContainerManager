@@ -1,6 +1,5 @@
 import joblib
 import numpy as np
-from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 rf_model = joblib.load("random_forest_spoilage_finetuned.pkl")
 scaler = joblib.load("scaler.pkl")

@@ -32,8 +32,8 @@ def process_image(image_o):
 
     results = detection_model(image, conf=0.37)
 
-    fruit_count = {"fresh_apples": 0,  "fresh_bananas": 0,
-                   "fresh_oranges": 0, "rotten_apples": 0, "rotten_bananas": 0, "rotten_oranges": 0}
+    fruit_count = {"Fresh_apples": 0,  "Fresh_bananas": 0,
+                   "Fresh_oranges": 0, "Spoiled_apples": 0, "Spoiled_bananas": 0, "Spoiled_oranges": 0}
 
     for result in results:
         for box in result.boxes.xyxy:
@@ -48,9 +48,9 @@ def process_image(image_o):
                 output = classification_model(fruit_tensor)
                 pred = torch.argmax(output, dim=1).item()
 
-            label_map = {0: "fresh_apples", 1: "fresh_bananas",  2: "fresh_oranges",
-                         3: "rotten_apples",  4: "rotten_bananas",
-                         5: "rotten_oranges"}
+            label_map = {0: "Fresh_apples", 1: "Fresh_bananas",  2: "Fresh_oranges",
+                         3: "Spoiled_apples",  4: "Spoiled_bananas",
+                         5: "Spolied_oranges"}
             fruit_count[label_map[pred]] += 1
 
             # Draw the box on the image
