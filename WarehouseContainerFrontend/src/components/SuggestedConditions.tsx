@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import * as brain from "brain.js";
+import { Architect, Trainer } from "synaptic";
 import { Table, Container, Row, Col } from "react-bootstrap";
 
 interface ContainerItem {
@@ -18,7 +18,7 @@ interface SuggestedConditions {
   humidity: number | null;
 }
 
-// 🔹 Define categories for food items (assign a number to each)
+// 🔹 Food encoding
 const foodEncoding: Record<string, number> = {
   apple: 0,
   banana: 1,
@@ -27,40 +27,31 @@ const foodEncoding: Record<string, number> = {
   grapes: 4,
 };
 
-// 🔹 Training Data - Using both `foodItem` and `methane`
+// 🔹 Training Data
 const trainingData = [
-  {
-    input: { food: 0, methane: 0.3 },
-    output: { temp: 20, press: 1013, humid: 55 },
-  }, // Apple
-  {
-    input: { food: 1, methane: 1.0 },
-    output: { temp: 22, press: 1015, humid: 58 },
-  }, // Banana
-  {
-    input: { food: 2, methane: 2.5 },
-    output: { temp: 28, press: 1018, humid: 67 },
-  }, // Orange
-  {
-    input: { food: 3, methane: 3.2 },
-    output: { temp: 30, press: 1020, humid: 70 },
-  }, // Mango
-  {
-    input: { food: 4, methane: 1.5 },
-    output: { temp: 25, press: 1016, humid: 60 },
-  }, // Grapes
+  { input: [0, 0.3], output: [20, 1013, 55] }, // Apple
+  { input: [1, 1.0], output: [22, 1015, 58] }, // Banana
+  { input: [2, 2.5], output: [28, 1018, 67] }, // Orange
+  { input: [3, 3.2], output: [30, 1020, 70] }, // Mango
+  { input: [4, 1.5], output: [25, 1016, 60] }, // Grapes
 ];
+
+// 🔹 Initialize Neural Network (2 inputs, 3 hidden neurons, 3 outputs)
+const net = new Architect.Perceptron(2, 3, 3);
+const trainer = new Trainer(net);
+
+// 🔹 Train the Neural Network
+trainer.train(
+  trainingData.map(({ input, output }) => ({ input, output })),
+  {
+    iterations: 5000,
+    error: 0.005,
+    rate: 0.1,
+  }
+);
 
 const SuggestedConditions = ({ sensorData }: SuggestedConditionsProps) => {
   const [item, setItem] = useState<ContainerItem | null>(null);
-  const net = new brain.NeuralNetwork();
-
-  useEffect(() => {
-    net.train(trainingData, {
-      iterations: 200,
-      errorThresh: 0.005,
-    });
-  }, []);
 
   useEffect(() => {
     if (!sensorData) {
@@ -73,26 +64,17 @@ const SuggestedConditions = ({ sensorData }: SuggestedConditionsProps) => {
 
   const getSuggestedConditions = (item: ContainerItem): SuggestedConditions => {
     try {
-      // Convert `foodItem` to a number
-      const foodNum = foodEncoding[item.foodIndex] ?? -1;
-
-      if (foodNum === -1) {
+      const foodNum = item.foodIndex;
+      if (!(foodNum in Object.values(foodEncoding))) {
         return { temperature: null, pressure: null, humidity: null };
       }
 
-      const prediction = net.run({
-        food: foodNum,
-        methane: item.methane,
-      }) as Partial<{
-        temp: number;
-        press: number;
-        humid: number;
-      }>;
+      const [temp, press, humid] = net.activate([foodNum, item.methane]);
 
       return {
-        temperature: Math.round((prediction?.temp ?? 10) * 10) / 10,
-        pressure: Math.round(prediction?.press ?? 1013),
-        humidity: Math.round(prediction?.humid ?? 85),
+        temperature: Math.round(temp * 10) / 10,
+        pressure: Math.round(press),
+        humidity: Math.round(humid),
       };
     } catch (err) {
       console.error(`Error predicting for ${item.foodIndex}:`, err);
@@ -121,11 +103,22 @@ const SuggestedConditions = ({ sensorData }: SuggestedConditionsProps) => {
               </thead>
               <tbody>
                 <tr>
-                  <td>{foodEncoding[item.foodIndex] ?? "Unknown"}</td>
+                  <td>
+                    {Object.keys(foodEncoding).find(
+                      (key) => foodEncoding[key] === item.foodIndex
+                    ) ?? "Unknown"}
+                  </td>
                   <td>{item.methane.toFixed(2)}</td>
-                  <td>{getSuggestedConditions(item).temperature}</td>
-                  <td>{getSuggestedConditions(item).pressure}</td>
-                  <td>{getSuggestedConditions(item).humidity}</td>
+                  {(() => {
+                    const conditions = getSuggestedConditions(item);
+                    return (
+                      <>
+                        <td>{conditions.temperature}</td>
+                        <td>{conditions.pressure}</td>
+                        <td>{conditions.humidity}</td>
+                      </>
+                    );
+                  })()}
                   <td>{new Date(item.lastDetected).toLocaleTimeString()}</td>
                 </tr>
               </tbody>

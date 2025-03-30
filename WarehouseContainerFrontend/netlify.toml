@@ -1,5 +1,5 @@
 [build]
-command = "npx install-pkg libxi-dev libx11-dev libxext-dev && npm install --build-from-source=false && npm run build"
+command = "npm install --build-from-source=false && npm run build"
 
 [build.environment]
 NODE_VERSION = "20"
