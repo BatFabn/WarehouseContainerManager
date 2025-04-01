@@ -1,4 +1,4 @@
-from pprint import pprint
+from datetime import datetime, timezone
 from typing import Optional
 from fastapi import FastAPI, File, Form, UploadFile, Request
 from fastapi.responses import JSONResponse
@@ -13,9 +13,9 @@ import redis
 
 app = FastAPI()
 
-redis_host = os.getenv("REDIS_HOST", "localhost")
-redis_port = int(os.getenv("REDIS_PORT", 7860))
-redis_password = os.getenv("REDIS_PASSWORD", None)
+redis_host = os.getenv("REDIS_HOST")
+redis_port = os.getenv("REDIS_PORT")
+redis_password = os.getenv("REDIS_PASSWORD")
 r = redis.Redis(host=redis_host, port=redis_port,
                 password=redis_password, decode_responses=True, socket_timeout=10)
 try:
@@ -133,7 +133,7 @@ async def predict(
 @app.post("/sensor")
 async def receive_data(request: Request):
     data = await request.json()
-
+    data["timestamp"] = datetime.now(timezone.utc).isoformat()
     result = process_data(
         None,
         Metrics(

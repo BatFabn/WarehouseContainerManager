@@ -8,7 +8,7 @@ import os
 app = FastAPI()
 
 load_dotenv()
-ENDPOINT = os.getenv("WAREHOUSE_SERVER_ENDPOINT")
+ENDPOINT = "http://0.0.0.0:5001/sensor"
 
 # Store the latest sensor readings
 sensor_data = {"container_id": 0, "rack_id": 0,

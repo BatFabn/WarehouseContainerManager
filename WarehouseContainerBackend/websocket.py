@@ -1,20 +1,30 @@
-import json
 import os
+import json
 from typing import Set
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+from motor.motor_asyncio import AsyncIOMotorClient
 from contextlib import asynccontextmanager
+from dotenv import load_dotenv
 import asyncio
 import redis
 
 app = FastAPI()
 
-redis_host = os.getenv("REDIS_HOST", "localhost")
-redis_port = os.getenv("REDIS_PORT", 7860)
-redis_password = os.getenv("REDIS_PASSWORD", None)
+load_dotenv()
+MONGO_URL = os.getenv("MONGO_URL")
+
+client = AsyncIOMotorClient(MONGO_URL)
+db = client["rack_database"]
+collection = db["sensor_data"]
+collection.create_index("timestamp", expireAfterSeconds=1*60*60)
+
+redis_host = os.getenv("REDIS_HOST")
+redis_port = os.getenv("REDIS_PORT")
+redis_password = os.getenv("REDIS_PASSWORD")
 redis_client = redis.Redis(
     host=redis_host, port=redis_port, password=redis_password, decode_responses=True)
-
+print("Connected to redis")
 connected_clients: Set[WebSocket] = set()
 
 
@@ -22,12 +32,12 @@ async def redis_listener():
     """Listens for messages on Redis and sends them to WebSocket clients."""
     pubsub = redis_client.pubsub()
     pubsub.subscribe("sensor_data")
-
     while True:
         message = pubsub.get_message(ignore_subscribe_messages=True)
         if message:
             try:
                 data = json.loads(message["data"])
+                asyncio.create_task(insert_data_to_db(data))
                 print(f"Received from Redis: {data}")
 
                 # Send data to all connected clients
@@ -39,6 +49,15 @@ async def redis_listener():
                 print(f"Invalid JSON received: {message['data']}")
 
         await asyncio.sleep(0.1)  # Prevents blocking
+
+
+async def insert_data_to_db(data):
+    """Insert data into MongoDB asynchronously."""
+    try:
+        await collection.insert_one(data)
+        print("Data inserted into MongoDB.")
+    except Exception as e:
+        print(f"Failed to insert data into MongoDB: {e}")
 
 
 @asynccontextmanager

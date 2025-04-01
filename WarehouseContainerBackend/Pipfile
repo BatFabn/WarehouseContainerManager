@@ -17,6 +17,7 @@ uvicorn = {extras = ["standard"], version = "*"}
 
 [dev-packages]
 httpx = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.12"
