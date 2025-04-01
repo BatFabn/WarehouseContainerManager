@@ -11,7 +11,8 @@ load_dotenv()
 ENDPOINT = os.getenv("WAREHOUSE_SERVER_ENDPOINT")
 
 # Store the latest sensor readings
-sensor_data = {"temperature": 0.0, "humidity": 0.0, "methane": 0.0}
+sensor_data = {"container_id": 0, "rack_id": 0,
+               "temperature": 0.0, "humidity": 0.0, "methane": 0.0}
 
 
 async def send_sensor_data():
@@ -19,6 +20,9 @@ async def send_sensor_data():
     async with httpx.AsyncClient() as client:
         while True:
             # Simulate sensor data
+            sensor_data["fruit"] = "apple"
+            sensor_data["container_id"] = 1
+            sensor_data["rack_id"] = 1
             sensor_data["temperature"] = round(random.uniform(20, 35), 2)
             sensor_data["humidity"] = round(random.uniform(40, 70), 2)
             sensor_data["methane"] = round(random.uniform(100, 500), 2)

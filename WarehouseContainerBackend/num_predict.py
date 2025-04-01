@@ -15,4 +15,4 @@ def process_num_inputs(fruit, temperature, humidity, methane):
     prediction = rf_model.predict(new_data_scaled)
 
     spoilage_labels = ["Fresh", "Early Spoilage", "Spoiled"]
-    return {"status": spoilage_labels[prediction[0]]}
+    return spoilage_labels[prediction[0]]

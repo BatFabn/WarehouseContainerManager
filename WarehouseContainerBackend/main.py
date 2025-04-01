@@ -1,3 +1,4 @@
+from pprint import pprint
 from typing import Optional
 from fastapi import FastAPI, File, Form, UploadFile, Request
 from fastapi.responses import JSONResponse
@@ -15,9 +16,19 @@ app = FastAPI()
 redis_host = os.getenv("REDIS_HOST", "localhost")
 redis_port = int(os.getenv("REDIS_PORT", 7860))
 redis_password = os.getenv("REDIS_PASSWORD", None)
-redis_client = redis.Redis(
-    host=redis_host, port=redis_port, password=redis_password, decode_responses=True
-)
+r = redis.Redis(host=redis_host, port=redis_port,
+                password=redis_password, decode_responses=True, socket_timeout=10)
+try:
+    r.ping()
+    print("✅ Redis connection successful!")
+except redis.ConnectionError as e:
+    print(f"❌ Redis connection failed: {e}")
+
+
+async def get_redis_publisher():
+    return redis.Redis(
+        host=redis_host, port=redis_port, password=redis_password, decode_responses=True, socket_timeout=10
+    )
 
 
 class ResponseData(BaseModel):
@@ -68,7 +79,7 @@ def process_data(image: bytes | None, metrics: Metrics | None):
             "_")[0] if max_key else fruit_status_image
 
     if metrics and None not in [metrics.temperature, metrics.humidity, metrics.methane]:
-        fruit_status_metrics = "Missing metrics" if fruit_idx not in list(fruit_index_value.values()) else process_num_inputs(
+        fruit_status_metrics = "Missing metrics" if fruit_idx not in [0, 1, 2] else process_num_inputs(
             fruit_idx, metrics.temperature, metrics.humidity, metrics.methane
         )
 
@@ -122,6 +133,7 @@ async def predict(
 @app.post("/sensor")
 async def receive_data(request: Request):
     data = await request.json()
+
     result = process_data(
         None,
         Metrics(
@@ -131,10 +143,11 @@ async def receive_data(request: Request):
             methane=data.get("methane", None)
         ),
     )
-
-    redis_client.publish(
-        "sensor_data", json.dumps(
-            {**data, **result["metrics"], **result["image"]})
-    )
+    result = result.model_dump()
+    message = {**data, **result["metrics"],
+               **(result["image"] if isinstance(result["image"], dict) else {"image": result["image"]})}
+    redis_pub = await get_redis_publisher()
+    redis_pub.publish("sensor_data", json.dumps(message))
+    redis_pub.close()
 
     return JSONResponse(content={"status": "success", "message": "Data received!"}, status_code=200)

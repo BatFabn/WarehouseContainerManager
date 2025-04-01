@@ -12,6 +12,7 @@ python-multipart = "*"
 ultralytics = "*"
 opencv-python = "*"
 redis = "*"
+motor = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 
 [dev-packages]
