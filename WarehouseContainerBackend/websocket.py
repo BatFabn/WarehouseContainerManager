@@ -43,6 +43,7 @@ async def redis_listener():
             try:
                 data = json.loads(message["data"])
                 asyncio.create_task(insert_data_to_db(data))
+                print("Received data from sensor...")
 
                 query = {
                     "container_id": data.get("container_id"), "rack_id": data.get("rack_id")}
