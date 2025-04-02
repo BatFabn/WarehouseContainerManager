@@ -44,23 +44,9 @@ async def redis_listener():
             try:
                 data = json.loads(message["data"])
                 print("Received data from sensor...")
-                # asyncio.create_task(insert_data_to_db(data))
+                asyncio.create_task(insert_data_to_db(data))
 
-                # query = {
-                #     "container_id": data.get("container_id"), "rack_id": data.get("rack_id")}
-                # count = await collection.estimated_document_count(query)
-                # if count >= MAX_DOCUMENTS_PER_ID:
-                #     oldest_records = collection.find(
-                #         query, sort=[("timestamp", 1)]).limit(MAX_DOCUMENTS_PER_ID//5)
-
-                #     oldest_ids = [doc["_id"] async for doc in oldest_records]
-
-                #     if oldest_ids:
-                #         await collection.delete_many({"_id": {"$in": oldest_ids}})
-                #         print(
-                #             f"🗑️ Deleted {len(oldest_ids)} oldest records to free up space.")
-                # if await collection.count_documents({}) > MAX_DOCUMENTS:
-                #     data["error"] = "Database storage exceeded"
+                asyncio.create_task(handle_database_operations(data))
 
                 print(f"Received from Redis: {data}")
 
@@ -84,6 +70,35 @@ async def redis_listener():
                 print(f"Invalid JSON received: {message['data']}")
 
         await asyncio.sleep(0.1)  # Prevents blocking
+
+
+async def handle_database_operations(data):
+    """Handles database insertions and cleanups asynchronously."""
+    try:
+        query = {"container_id": data.get(
+            "container_id"), "rack_id": data.get("rack_id")}
+        count = await collection.count_documents(query)
+
+        if count >= MAX_DOCUMENTS_PER_ID:
+            oldest_records = collection.find(
+                query, sort=[("timestamp", 1)]).limit(MAX_DOCUMENTS_PER_ID // 5)
+            oldest_ids = [doc["_id"] async for doc in oldest_records]
+
+            if oldest_ids:
+                await collection.delete_many({"_id": {"$in": oldest_ids}})
+                print(
+                    f"🗑️ Deleted {len(oldest_ids)} oldest records to free up space.")
+
+        if await collection.count_documents({}) > MAX_DOCUMENTS:
+            data["error"] = "Database storage exceeded"
+
+        # Ensure MongoDB generates a new `_id`
+        data.pop("_id", None)  # Removes `_id` if present
+        await collection.insert_one(data)
+        print("Data inserted into MongoDB.")
+
+    except Exception as e:
+        print(f"Database operation failed: {e}")
 
 
 async def insert_data_to_db(data):
