@@ -27,7 +27,8 @@ redis_password = os.getenv("REDIS_PASSWORD")
 redis_client = redis.Redis(
     host=redis_host, port=redis_port, password=redis_password, decode_responses=True)
 print(f"Connected to redis {type(redis_host)} {type(redis_port)}")
-
+print(
+    f"Redis Config: {redis_host}:{redis_port}, Password: {bool(redis_password)}")
 connected_clients: Set[WebSocket] = set()
 
 
