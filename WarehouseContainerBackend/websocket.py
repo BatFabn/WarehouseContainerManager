@@ -12,7 +12,6 @@ import redis
 
 app = FastAPI()
 
-load_dotenv()
 MONGO_URL = os.getenv("MONGO_URL")
 MAX_DOCUMENTS_PER_ID = int(os.getenv("MONGO_MAX_DOCUMENTS_PER_ID"))
 MAX_DOCUMENTS = int(os.getenv("MONGO_MAX_DOCUMENTS"))
