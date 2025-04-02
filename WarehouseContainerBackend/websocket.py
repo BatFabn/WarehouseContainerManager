@@ -39,6 +39,7 @@ async def redis_listener():
     print("Listening for Redis messages...")
     while True:
         message = pubsub.get_message(ignore_subscribe_messages=True)
+        print(message)
         if message:
             try:
                 data = json.loads(message["data"])
