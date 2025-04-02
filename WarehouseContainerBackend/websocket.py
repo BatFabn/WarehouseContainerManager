@@ -104,7 +104,7 @@ async def subscribe(websocket: WebSocket):
 
     try:
         while True:
-            await websocket.receive_text()  # Keep connection alive
+            await asyncio.sleep(1)  # Keep connection alive
     except Exception as e:
         print(f"WebSocket error: {e}")
     finally:
