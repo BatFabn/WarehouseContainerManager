@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 
 interface Props {
-  id: string;
+  id: number;
 }
-const Room = ({ id }: Props) => {
+const Container = ({ id }: Props) => {
   return (
     <div className="accordion" id={`accordion-${id}`}>
       <div className="accordion-item">
@@ -16,7 +16,7 @@ const Room = ({ id }: Props) => {
             aria-expanded="false"
             aria-controls={`collapse-${id}1`}
           >
-            Rack #
+            Rack #1
           </button>
         </h2>
         <div
@@ -33,7 +33,7 @@ const Room = ({ id }: Props) => {
               </ul>
             </div>
             <div className="hstack gap-3">
-              <Link className="icon-link" to="/rack">
+              <Link className="icon-link" to="/rack/${id}/1">
                 Go to
               </Link>
               <button type="button" className="btn btn-danger ms-auto">
@@ -54,7 +54,7 @@ const Room = ({ id }: Props) => {
             aria-expanded="false"
             aria-controls={`collapse-${id}2`}
           >
-            Rack #
+            Rack #2
           </button>
         </h2>
         <div
@@ -70,7 +70,7 @@ const Room = ({ id }: Props) => {
             </ul>
           </div>
           <div className="hstack gap-3">
-            <Link className="icon-link" to="/rack">
+            <Link className="icon-link" to="/rack/${id}/2">
               Go to
             </Link>
             <button type="button" className="btn btn-danger ms-auto">
@@ -90,7 +90,7 @@ const Room = ({ id }: Props) => {
             aria-expanded="false"
             aria-controls={`collapse-${id}3`}
           >
-            Rack #
+            Rack #3
           </button>
         </h2>
         <div
@@ -106,7 +106,7 @@ const Room = ({ id }: Props) => {
             </ul>
           </div>
           <div className="hstack gap-3">
-            <Link className="icon-link" to="/rack">
+            <Link className="icon-link" to="/rack/${id}/3">
               Go to
             </Link>
             <button type="button" className="btn btn-danger ms-auto">
@@ -119,4 +119,4 @@ const Room = ({ id }: Props) => {
   );
 };
 
-export default Room;
+export default Container;

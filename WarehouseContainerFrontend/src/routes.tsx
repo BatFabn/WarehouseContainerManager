@@ -10,7 +10,10 @@ const router = createBrowserRouter([
       { path: "/", element: <App /> },
       { path: "/dashboard", element: <Dashboard verified={() => {}} /> },
       { path: "/members", element: <MemberManagement verified={() => {}} /> },
-      { path: "/rack", element: <RackPage verified={() => {}} /> },
+      {
+        path: "/rack/:containerId/:rackId",
+        element: <RackPage verified={() => {}} />,
+      },
     ],
   },
 ]);

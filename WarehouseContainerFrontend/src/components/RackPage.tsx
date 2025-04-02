@@ -1,3 +1,4 @@
+import { useParams } from "react-router-dom";
 import NavBar from "./NavBar";
 import RealTimeGraph from "./RealTimeChart";
 
@@ -6,11 +7,17 @@ interface Props {
 }
 
 const RackPage = ({ verified }: Props) => {
+  const { containerId, rackId } = useParams();
+
   return (
     <div className="text-center bg-success">
       <NavBar verified={verified} />
-      <h1>Rack #</h1>
-      <RealTimeGraph />
+      <h2>Container #{containerId}</h2>
+      <h1>Rack #{rackId}</h1>
+      <RealTimeGraph
+        queryContainerId={parseInt(containerId!)}
+        queryRackId={parseInt(rackId!)}
+      />
     </div>
   );
 };

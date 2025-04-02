@@ -5,7 +5,7 @@ import { Table, Container, Row, Col } from "react-bootstrap";
 interface ContainerItem {
   foodIndex: number;
   methane: number;
-  lastDetected: string;
+  timestamp: string;
 }
 
 interface SuggestedConditionsProps {
@@ -18,7 +18,7 @@ interface SuggestedConditions {
   humidity: number | null;
 }
 
-// 🔹 Food encoding
+// Food encoding
 const foodEncoding: Record<string, number> = {
   apple: 0,
   banana: 1,
@@ -27,25 +27,25 @@ const foodEncoding: Record<string, number> = {
   grapes: 4,
 };
 
-// 🔹 Training Data
+// Training Data
 const trainingData = [
-  { input: [0, 0.3], output: [20, 1013, 55] }, // Apple
-  { input: [1, 1.0], output: [22, 1015, 58] }, // Banana
-  { input: [2, 2.5], output: [28, 1018, 67] }, // Orange
-  { input: [3, 3.2], output: [30, 1020, 70] }, // Mango
-  { input: [4, 1.5], output: [25, 1016, 60] }, // Grapes
+  { input: [0, 0.3], output: [20 / 50, 1013 / 1050, 15 / 30] }, // Apple
+  { input: [1, 1.0], output: [22 / 50, 1015 / 1050, 18 / 30] }, // Banana
+  { input: [2, 2.5], output: [28 / 50, 1018 / 1050, 20 / 30] }, // Orange
+  { input: [3, 3.2], output: [30 / 50, 1020 / 1050, 25 / 30] }, // Mango
+  { input: [4, 1.5], output: [25 / 50, 1016 / 1050, 22 / 30] }, // Grapes
 ];
 
-// 🔹 Initialize Neural Network (2 inputs, 3 hidden neurons, 3 outputs)
+// Initialize Neural Network (2 inputs, 3 hidden neurons, 3 outputs)
 const net = new Architect.Perceptron(2, 3, 3);
 const trainer = new Trainer(net);
 
-// 🔹 Train the Neural Network
+// Train the Neural Network
 trainer.train(
   trainingData.map(({ input, output }) => ({ input, output })),
   {
-    iterations: 5000,
-    error: 0.005,
+    iterations: 10000,
+    error: 0.001,
     rate: 0.1,
   }
 );
@@ -70,11 +70,13 @@ const SuggestedConditions = ({ sensorData }: SuggestedConditionsProps) => {
       }
 
       const [temp, press, humid] = net.activate([foodNum, item.methane]);
+      console.log("Input to NN:", [foodNum, item.methane]);
+      console.log("Raw NN Output:", [temp, press, humid]);
 
       return {
-        temperature: Math.round(temp * 10) / 10,
-        pressure: Math.round(press),
-        humidity: Math.round(humid),
+        temperature: Math.round(temp * 50 * 10) / 10, // Scale back to °C
+        pressure: Math.round(press * 50 + 1000), // Scale back to hPa
+        humidity: Math.round(humid * 30 * 10) / 10, // Scale back to g/m³
       };
     } catch (err) {
       console.error(`Error predicting for ${item.foodIndex}:`, err);
@@ -97,7 +99,7 @@ const SuggestedConditions = ({ sensorData }: SuggestedConditionsProps) => {
                   <th>Methane (ppm)</th>
                   <th>Suggested Temp (°C)</th>
                   <th>Suggested Pressure (hPa)</th>
-                  <th>Suggested Humidity (%)</th>
+                  <th>Suggested Humidity (g/m³)</th>
                   <th>Last Detected</th>
                 </tr>
               </thead>
@@ -119,7 +121,7 @@ const SuggestedConditions = ({ sensorData }: SuggestedConditionsProps) => {
                       </>
                     );
                   })()}
-                  <td>{new Date(item.lastDetected).toLocaleTimeString()}</td>
+                  <td>{new Date(item.timestamp).toLocaleTimeString()}</td>
                 </tr>
               </tbody>
             </Table>

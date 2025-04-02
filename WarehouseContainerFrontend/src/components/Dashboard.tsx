@@ -13,7 +13,7 @@ const Dashboard = ({ verified }: Props) => {
       <div className="container overflow-hidden text-center p-5">
         <div className="row g-5">
           <div className="col-6 bg-secondary text-white p-4">
-            <Container id="room1" />
+            <Container id={1} />
             <div className="p-3 fs-3">Container #1</div>
             <div className="hstack px-5">
               <StopAllButton />
@@ -23,7 +23,7 @@ const Dashboard = ({ verified }: Props) => {
             </div>
           </div>
           <div className="col-6 bg-secondary text-white p-4">
-            <Container id="room2" />
+            <Container id={2} />
             <div className="p-3 fs-3">Container #2</div>
             <div className="hstack px-5">
               <StopAllButton />
@@ -33,7 +33,7 @@ const Dashboard = ({ verified }: Props) => {
             </div>
           </div>
           <div className="col-6 bg-secondary text-white p-4">
-            <Container id="room3" />
+            <Container id={3} />
             <div className="p-3 fs-3">Container #3</div>
             <div className="hstack px-5">
               <StopAllButton />
@@ -43,7 +43,7 @@ const Dashboard = ({ verified }: Props) => {
             </div>
           </div>
           <div className="col-6 bg-secondary text-white p-4">
-            <Container id="room4" />
+            <Container id={4} />
             <div className="p-3 fs-3">Container #4</div>
             <div className="hstack px-5">
               <StopAllButton />
