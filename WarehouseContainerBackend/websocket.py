@@ -36,6 +36,7 @@ async def redis_listener():
     """Listens for messages on Redis and sends them to WebSocket clients."""
     pubsub = redis_client.pubsub()
     pubsub.subscribe("sensor_data")
+    print("Listening for Redis messages...")
     while True:
         message = pubsub.get_message(ignore_subscribe_messages=True)
         if message:
