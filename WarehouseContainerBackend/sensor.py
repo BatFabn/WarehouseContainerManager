@@ -1,14 +1,14 @@
 import asyncio
 import random
 import httpx
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI
 from dotenv import load_dotenv
 import os
 
 app = FastAPI()
 
 load_dotenv()
-ENDPOINT = "http://0.0.0.0:5001/sensor"
+ENDPOINT = os.getenv("WAREHOUSE_SERVER_ENDPOINT")
 
 # Store the latest sensor readings
 sensor_data = {"container_id": 0, "rack_id": 0,

@@ -1,7 +1,7 @@
 import os
 import json
 from typing import Set
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, Query, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from contextlib import asynccontextmanager
@@ -9,22 +9,26 @@ from dotenv import load_dotenv
 import asyncio
 import redis
 
+
 app = FastAPI()
 
 load_dotenv()
 MONGO_URL = os.getenv("MONGO_URL")
+MAX_DOCUMENTS_PER_ID = int(os.getenv("MONGO_MAX_DOCUMENTS_PER_ID"))
+MAX_DOCUMENTS = int(os.getenv("MONGO_MAX_DOCUMENTS"))
 
 client = AsyncIOMotorClient(MONGO_URL)
 db = client["rack_database"]
 collection = db["sensor_data"]
-collection.create_index("timestamp", expireAfterSeconds=1*60*60)
+collection.create_index([("container_id", 1), ("rack_id", 1)])
 
 redis_host = os.getenv("REDIS_HOST")
-redis_port = os.getenv("REDIS_PORT")
+redis_port = int(os.getenv("REDIS_PORT"))
 redis_password = os.getenv("REDIS_PASSWORD")
 redis_client = redis.Redis(
     host=redis_host, port=redis_port, password=redis_password, decode_responses=True)
-print("Connected to redis")
+print(f"Connected to redis")
+
 connected_clients: Set[WebSocket] = set()
 
 
@@ -38,6 +42,23 @@ async def redis_listener():
             try:
                 data = json.loads(message["data"])
                 asyncio.create_task(insert_data_to_db(data))
+
+                query = {
+                    "container_id": data.get("container_id"), "rack_id": data.get("rack_id")}
+                count = await collection.estimated_document_count(query)
+                if count >= MAX_DOCUMENTS_PER_ID:
+                    oldest_records = collection.find(
+                        query, sort=[("timestamp", 1)]).limit(MAX_DOCUMENTS_PER_ID//5)
+
+                    oldest_ids = [doc["_id"] async for doc in oldest_records]
+
+                    if oldest_ids:
+                        await collection.delete_many({"_id": {"$in": oldest_ids}})
+                        print(
+                            f"🗑️ Deleted {len(oldest_ids)} oldest records to free up space.")
+                if await collection.count_documents({}) > MAX_DOCUMENTS:
+                    data["error"] = "Database storage exceeded"
+
                 print(f"Received from Redis: {data}")
 
                 # Send data to all connected clients
@@ -88,6 +109,21 @@ async def subscribe(websocket: WebSocket):
         connected_clients.remove(websocket)
         print("Client disconnected!")
 
+
+@app.get("/data/")
+async def get_rack_data(
+    rack_id: int = Query(...),
+    container_id: int = Query(...)
+):
+    """Retrieve documents matching rack_id and container_id."""
+    query = {"rack_id": int(rack_id), "container_id": int(container_id)}
+
+    documents = await collection.find(query, sort=[("timestamp", -1)]).to_list(1000)
+
+    for doc in documents:
+        doc["_id"] = str(doc["_id"])
+
+    return documents
 
 app.add_middleware(
     CORSMiddleware,
