@@ -70,8 +70,6 @@ const SuggestedConditions = ({ sensorData }: SuggestedConditionsProps) => {
       }
 
       const [temp, press, humid] = net.activate([foodNum, item.methane]);
-      console.log("Input to NN:", [foodNum, item.methane]);
-      console.log("Raw NN Output:", [temp, press, humid]);
 
       return {
         temperature: Math.round(temp * 50 * 10) / 10, // Scale back to °C
