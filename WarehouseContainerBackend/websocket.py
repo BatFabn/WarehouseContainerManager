@@ -166,11 +166,12 @@ async def get_rack_data():
         container_id = combo["_id"]["container_id"]
         rack_id = combo["_id"]["rack_id"]
 
-        record = await db[COLLECTION_NAME].find(
+        records = await db[COLLECTION_NAME].find(
             {"container_id": container_id, "rack_id": rack_id},
             sort=[("timestamp", -1)]
         ).limit(1).to_list(1)
 
+        record = records[0]
         record["_id"] = str(record["_id"])
 
         results.append(record)

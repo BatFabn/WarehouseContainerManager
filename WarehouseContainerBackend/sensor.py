@@ -20,12 +20,15 @@ async def send_sensor_data():
     async with httpx.AsyncClient() as client:
         while True:
             # Simulate sensor data
-            sensor_data["fruit"] = "apple"
-            sensor_data["container_id"] = 1
-            sensor_data["rack_id"] = 1
-            sensor_data["temperature"] = round(random.uniform(20, 35), 2)
-            sensor_data["humidity"] = round(random.uniform(40, 70), 2)
-            sensor_data["methane"] = round(random.uniform(100, 500), 2)
+            sensor_data["fruit"] = "banana"
+            sensor_data["container_id"] = 2
+            sensor_data["rack_id"] = 3
+            sensor_data["temperature"] = round(random.uniform(18, 21) if random.random(
+            ) < 0.5 else random.uniform(27, 30), 2)  # Slightly off ideal
+            sensor_data["humidity"] = round(
+                random.uniform(70, 85), 2)  # Increased humidity
+            # Elevated but not extreme methane
+            sensor_data["methane"] = round(random.uniform(1.5, 3.5), 3)
 
             print(f"Posting Data: {sensor_data}")
 
@@ -56,3 +59,8 @@ async def receive_sensor_data(data: dict):
 async def get_sensor_data():
     """Fetch the latest sensor readings."""
     return sensor_data
+
+
+"""
+{"container_id": 1, "rack_id": 1, "temperature": 27.12, "humidity": 74.82, "methane": 2.75, "fruit": "banana", "timestamp": "2025-04-03T07:15:52.467694+00:00", "status": "Early Spoilage", "image": "Missing image"}
+"""
