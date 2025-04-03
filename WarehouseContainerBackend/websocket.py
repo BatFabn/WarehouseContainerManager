@@ -147,7 +147,7 @@ async def get_rack_data(
     query = {"rack_id": int(rack_id), "container_id": int(container_id)}
 
     documents = await collection.find(query, sort=[("timestamp", -1)]).to_list(1000)
-
+    documents = documents[::-1]
     for doc in documents:
         doc["_id"] = str(doc["_id"])
 
