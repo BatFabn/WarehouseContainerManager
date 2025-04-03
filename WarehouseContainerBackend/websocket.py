@@ -9,17 +9,17 @@ from dotenv import load_dotenv
 import asyncio
 import redis
 
-
 app = FastAPI()
 
 load_dotenv()
 MONGO_URL = os.getenv("MONGO_URL")
 MAX_DOCUMENTS_PER_ID = int(os.getenv("MONGO_MAX_DOCUMENTS_PER_ID"))
 MAX_DOCUMENTS = int(os.getenv("MONGO_MAX_DOCUMENTS"))
+COLLECTION_NAME = "sensor_data"
 
 client = AsyncIOMotorClient(MONGO_URL)
 db = client["rack_database"]
-collection = db["sensor_data"]
+collection = db[COLLECTION_NAME]
 collection.create_index([("container_id", 1), ("rack_id", 1)])
 
 redis_host = os.getenv("REDIS_HOST")
@@ -152,6 +152,34 @@ async def get_rack_data(
         doc["_id"] = str(doc["_id"])
 
     return documents
+
+
+@app.get("/data")
+async def get_rack_data():
+    """Retrieve documents matching rack_id and container_id."""
+    unique_combos = await db[COLLECTION_NAME].aggregate([
+        {"$group": {"_id": {"container_id": "$container_id", "rack_id": "$rack_id"}}}
+    ]).to_list(None)
+
+    results = []
+    for combo in unique_combos:
+        container_id = combo["_id"]["container_id"]
+        rack_id = combo["_id"]["rack_id"]
+
+        records = await db[COLLECTION_NAME].find(
+            {"container_id": container_id, "rack_id": rack_id}
+        ).limit(1000).to_list(1000)
+
+        for record in records:
+            record["_id"] = str(record["_id"])
+
+        results.append({
+            "container_id": container_id,
+            "rack_id": rack_id,
+            "records": records
+        })
+
+    return results
 
 app.add_middleware(
     CORSMiddleware,
