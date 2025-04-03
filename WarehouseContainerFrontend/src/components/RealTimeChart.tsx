@@ -205,7 +205,8 @@ const RealTimeText = ({
                   <strong>Humidity (%):</strong> {data.humidity}
                 </li>
                 <li>
-                  <strong>Last Detected:</strong> {data.timestamp}
+                  <strong>Last Detected:</strong>{" "}
+                  {new Date(data.timestamp).toLocaleString()}
                 </li>
               </ul>
             ) : (
