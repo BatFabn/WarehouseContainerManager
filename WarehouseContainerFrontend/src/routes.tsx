@@ -8,11 +8,11 @@ const router = createBrowserRouter([
   {
     children: [
       { path: "/", element: <App /> },
-      { path: "/dashboard", element: <Dashboard verified={() => {}} /> },
-      { path: "/members", element: <MemberManagement verified={() => {}} /> },
+      { path: "/dashboard", element: <Dashboard /> },
+      { path: "/members", element: <MemberManagement /> },
       {
         path: "/rack/:containerId/:rackId",
-        element: <RackPage verified={() => {}} />,
+        element: <RackPage />,
       },
     ],
   },

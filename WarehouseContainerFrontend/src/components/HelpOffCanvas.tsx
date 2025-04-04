@@ -27,10 +27,9 @@ function HelpOffCanvas() {
   return (
     <div>
       <button
-        className="btn btn-outline-info d-flex align-items-center gap-2 px-3 py-2 shadow-sm"
+        className="btn btn-info d-flex align-items-center gap-2 px-3 py-2 shadow-sm"
         onClick={openOffcanvas}
       >
-        <i className="bi bi-question-circle-fill"></i>
         Help
       </button>
 

@@ -1,17 +1,18 @@
-import React, { useState } from "react";
-import Dashboard from "./components/Dashboard";
+import React, { useEffect } from "react";
 import LoginPage from "./components/LoginPage";
+import { useNavigate } from "react-router-dom";
 
 const App: React.FC = () => {
-  const [login, setLogin] = useState(false);
+  const navigate = useNavigate();
 
-  const verified = () => {
-    login ? setLogin(false) : setLogin(true);
-  };
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) navigate("/dashboard");
+  });
+
   return (
     <div>
-      {!login && <LoginPage verified={verified} />}
-      {login && <Dashboard verified={verified} />}
+      <LoginPage />
     </div>
   );
 };

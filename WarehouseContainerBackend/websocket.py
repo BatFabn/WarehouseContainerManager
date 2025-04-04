@@ -3,22 +3,22 @@ import json
 from typing import Set
 from fastapi import FastAPI, Query, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 import asyncio
 import redis
+from database import db
+from auth import router as auth_router
+
 
 app = FastAPI()
+app.include_router(auth_router)
 
 load_dotenv()
-MONGO_URL = os.getenv("MONGO_URL")
 MAX_DOCUMENTS_PER_ID = int(os.getenv("MONGO_MAX_DOCUMENTS_PER_ID"))
 MAX_DOCUMENTS = int(os.getenv("MONGO_MAX_DOCUMENTS"))
 COLLECTION_NAME = "sensor_data"
 
-client = AsyncIOMotorClient(MONGO_URL)
-db = client["rack_database"]
 collection = db[COLLECTION_NAME]
 collection.create_index([("container_id", 1), ("rack_id", 1)])
 
@@ -140,11 +140,11 @@ async def subscribe(websocket: WebSocket):
 
 @app.get("/data/")
 async def get_rack_data(
-    rack_id: int = Query(...),
-    container_id: int = Query(...)
+    rack_id: str = Query(...),
+    container_id: str = Query(...)
 ):
     """Retrieve documents matching rack_id and container_id."""
-    query = {"rack_id": int(rack_id), "container_id": int(container_id)}
+    query = {"rack_id": rack_id, "container_id": container_id}
 
     documents = await collection.find(query, sort=[("timestamp", -1)]).to_list(1000)
     documents = documents[::-1]

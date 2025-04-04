@@ -50,7 +50,7 @@ const Container = ({ id, rackIds, onDeleteRack }: Props) => {
     };
 
     fetchData();
-  }, []);
+  }, [warehouseUrl]);
 
   useEffect(() => {
     let wsTimeout: NodeJS.Timeout;
@@ -69,7 +69,7 @@ const Container = ({ id, rackIds, onDeleteRack }: Props) => {
       ws.close();
       clearTimeout(wsTimeout);
     };
-  }, []);
+  }, [warehouseUrl]);
 
   return (
     <div className="accordion" id={`accordion-${id}`}>
@@ -92,7 +92,6 @@ const Container = ({ id, rackIds, onDeleteRack }: Props) => {
           <div
             id={`collapse-${id}${rackId}`}
             className="accordion-collapse collapse"
-            data-bs-parent={`#accordion-${id}`}
           >
             <div className="accordion-body">
               <div className="card">
@@ -116,11 +115,8 @@ const Container = ({ id, rackIds, onDeleteRack }: Props) => {
                   </li>
                 </ul>
               </div>
-              <div className="hstack gap-3">
-                <Link
-                  className="icon-link"
-                  to={`/rack/${String(id)}/${rackId}`}
-                >
+              <div className="d-flex justify-content-between hstack">
+                <Link className="icon-link" to={`/rack/${id}/${rackId}`}>
                   Go to
                 </Link>
                 <DeleteRackButton

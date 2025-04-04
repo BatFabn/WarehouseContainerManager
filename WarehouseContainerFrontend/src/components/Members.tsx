@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Trash } from "lucide-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import NavBar from "./NavBar";
+import { useNavigate } from "react-router-dom";
 
 interface Member {
   name: string;
@@ -14,13 +15,18 @@ interface Group {
   members: Member[];
 }
 
-const MemberManagement = ({ verified }: { verified: () => void }) => {
+const MemberManagement = () => {
   const [members, setMembers] = useState<Member[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<string>("");
   const [groupName, setGroupName] = useState<string>("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!localStorage.getItem("token")) navigate("/");
+  }, [navigate]);
 
   const addMember = () => {
     if (name && email && role && !members.some((m) => m.email === email)) {
@@ -54,7 +60,7 @@ const MemberManagement = ({ verified }: { verified: () => void }) => {
 
   return (
     <div className="bg-dark text-light rounded">
-      <NavBar verified={verified} />
+      <NavBar />
       <h2 className="text-center mb-4">Admin Members Management</h2>
 
       <div className="container card bg-secondary p-3 mb-4">

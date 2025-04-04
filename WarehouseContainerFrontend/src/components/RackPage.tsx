@@ -1,17 +1,18 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "./NavBar";
 import RealTimeGraph from "./RealTimeChart";
 import { useEffect, useState } from "react";
 import { useContainerRackState } from "../store/containerRackState";
 
-interface Props {
-  verified: () => void;
-}
-
-const RackPage = ({ verified }: Props) => {
+const RackPage = () => {
   const { containerId, rackId } = useParams();
   const [status, setStatus] = useState<string>("success");
   const { getContainerRackState } = useContainerRackState();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!localStorage.getItem("token")) navigate("/");
+  }, [navigate]);
 
   const updateStatus = (value: string | undefined) => {
     if (!value) console.log("Incorrect status received");
@@ -31,7 +32,7 @@ const RackPage = ({ verified }: Props) => {
 
   return (
     <div className={`text-center bg-${status}`}>
-      <NavBar verified={verified} />
+      <NavBar />
       <h2>Container #{containerId}</h2>
       <h1>Rack #{rackId}</h1>
       <RealTimeGraph queryContainerId={containerId!} queryRackId={rackId!} />

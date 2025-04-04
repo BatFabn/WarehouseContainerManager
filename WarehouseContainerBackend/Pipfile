@@ -15,6 +15,10 @@ redis = "*"
 motor = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 certifi = "*"
+python-jose = {extras = ["cryptography"], version = "*"}
+passlib = {extras = ["bcrypt"], version = "*"}
+pyjwt = "*"
+pydantic = {extras = ["email"], version = "*"}
 
 [dev-packages]
 httpx = "*"

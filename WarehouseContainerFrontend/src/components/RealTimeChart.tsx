@@ -143,7 +143,7 @@ const RealTimeText = ({
       console.log("🛑 WebSocket closed.");
       clearTimeout(wsTimeout);
     };
-  }, []);
+  }, [containerId, rackId]);
 
   useEffect(() => {
     if (data) {

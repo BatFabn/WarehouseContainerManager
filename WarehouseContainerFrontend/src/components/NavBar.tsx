@@ -1,11 +1,7 @@
 import { Link } from "react-router-dom";
 import HelpOffCanvas from "./HelpOffCanvas";
 
-interface Props {
-  verified: () => void;
-}
-
-const NavBar = ({ verified }: Props) => {
+const NavBar = () => {
   return (
     <div>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -46,7 +42,9 @@ const NavBar = ({ verified }: Props) => {
               <Link
                 className="nav-link px-3 text-danger fw-semibold"
                 to="/"
-                onClick={verified}
+                onClick={() => {
+                  localStorage.removeItem("token");
+                }}
               >
                 Log out
               </Link>

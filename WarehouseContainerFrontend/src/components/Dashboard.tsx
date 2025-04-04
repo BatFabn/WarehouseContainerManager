@@ -2,15 +2,20 @@ import NavBar from "./NavBar";
 import Container from "./Container";
 import DeleteContainerButton from "./DeleteContainerButton";
 import AddRackButton from "./AddRackButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddContainerButton from "./AddContainerButton";
 import DeleteContainersButton from "./DeleteContainersButton";
+import { useNavigate } from "react-router-dom";
 
-interface Props {
-  verified: () => void;
-}
+const Dashboard = () => {
+  const navigate = useNavigate();
 
-const Dashboard = ({ verified }: Props) => {
+  useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      navigate("/");
+    }
+  }, [navigate]);
+
   const [containersRacksCount, setContainersRacksCount] = useState<
     Record<string, string[]>
   >({ "1": ["1", "2", "3"] });
@@ -57,7 +62,7 @@ const Dashboard = ({ verified }: Props) => {
 
   return (
     <div className="bg-dark min-vh-100">
-      <NavBar verified={verified} />
+      <NavBar />
 
       <div className="container py-5">
         <div className="row gy-5 justify-content-center">

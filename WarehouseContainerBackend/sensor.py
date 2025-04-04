@@ -11,7 +11,7 @@ load_dotenv()
 ENDPOINT = os.getenv("WAREHOUSE_SERVER_ENDPOINT")
 
 # Store the latest sensor readings
-sensor_data = {"container_id": 0, "rack_id": 0,
+sensor_data = {"container_id": "", "rack_id": "",
                "temperature": 0.0, "humidity": 0.0, "methane": 0.0}
 
 
@@ -21,8 +21,8 @@ async def send_sensor_data():
         while True:
             # Simulate sensor data
             sensor_data["fruit"] = "banana"
-            sensor_data["container_id"] = 2
-            sensor_data["rack_id"] = 3
+            sensor_data["container_id"] = "2"
+            sensor_data["rack_id"] = "3"
             sensor_data["temperature"] = round(random.uniform(18, 21) if random.random(
             ) < 0.5 else random.uniform(27, 30), 2)  # Slightly off ideal
             sensor_data["humidity"] = round(
@@ -62,5 +62,5 @@ async def get_sensor_data():
 
 
 """
-{"container_id": 1, "rack_id": 1, "temperature": 27.12, "humidity": 74.82, "methane": 2.75, "fruit": "banana", "timestamp": "2025-04-03T07:15:52.467694+00:00", "status": "Early Spoilage", "image": "Missing image"}
+{"container_id": "1", "rack_id": "1", "temperature": 27.12, "humidity": 74.82, "methane": 2.75, "fruit": "banana", "timestamp": "2025-04-03T07:15:52.467694+00:00", "status": "Early Spoilage", "image": "Missing image"}
 """
