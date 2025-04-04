@@ -1,49 +1,52 @@
+import { useState } from "react";
+import { Button, Modal, Form } from "react-bootstrap";
 import { PlusCircle } from "lucide-react";
-import React, { useState } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
 
 interface Props {
   onAddContainer: (containerId: string) => void;
 }
-const AddContainerButton: React.FC<Props> = ({ onAddContainer }) => {
+
+const AddContainerButton = ({ onAddContainer }: Props) => {
   const [show, setShow] = useState(false);
-  const [containerId, setContainerId] = useState("");
+  const [containerInput, setContainerInput] = useState("");
 
   const handleAddContainer = () => {
-    const id = containerId;
-    if (id) {
-      onAddContainer(id);
-      setShow(false);
-      setContainerId(""); // Reset input field
-    } else {
-      alert("Invalid Container ID! Please enter a valid value.");
-    }
+    const ids = containerInput
+      .split(/[,\s]+/)
+      .map((id) => id.trim())
+      .filter((id) => id !== "");
+
+    ids.forEach((id) => onAddContainer(id));
+
+    setContainerInput("");
+    setShow(false);
   };
 
   return (
     <div>
       <Button
         variant="success"
-        className="d-flex align-items-center gap-2 rounded-pill px-4 py-2 shadow-sm"
+        className="d-flex align-items-center gap-2 rounded-pill px-4 py-2 shadow-sm fw-semibold"
         onClick={() => setShow(true)}
       >
         <PlusCircle size={20} />
         Add Container
       </Button>
+
       <Modal show={show} onHide={() => setShow(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Enter Container ID</Modal.Title>
+          <Modal.Title>Enter Container ID(s)</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <Form>
-            <Form.Group controlId="containerId">
-              <Form.Label>Container ID</Form.Label>
+            <Form.Group controlId="containerIds">
+              <Form.Label>Container IDs</Form.Label>
               <Form.Control
-                type="string"
-                value={containerId}
-                onChange={(e) => setContainerId(e.target.value)}
-                placeholder="Enter Container ID"
+                type="text"
+                value={containerInput}
+                onChange={(e) => setContainerInput(e.target.value)}
+                placeholder="Enter IDs separated by comma or space (e.g., 1, 2 3)"
               />
             </Form.Group>
           </Form>

@@ -4,6 +4,7 @@ import DeleteContainerButton from "./DeleteContainerButton";
 import AddRackButton from "./AddRackButton";
 import { useState } from "react";
 import AddContainerButton from "./AddContainerButton";
+import DeleteContainersButton from "./DeleteContainersButton";
 
 interface Props {
   verified: () => void;
@@ -17,7 +18,7 @@ const Dashboard = ({ verified }: Props) => {
   const addContainer = (containerId: string) => {
     setContainersRacksCount((prev) => {
       const updated = { ...prev };
-      updated[containerId] = [];
+      if (!updated[containerId]) updated[containerId] = [];
       return updated;
     });
   };
@@ -26,6 +27,14 @@ const Dashboard = ({ verified }: Props) => {
     setContainersRacksCount((prev) => {
       const updated = { ...prev };
       delete updated[containerId];
+      return updated;
+    });
+  };
+
+  const deleteContainers = (containerIds: string[]) => {
+    setContainersRacksCount((prev) => {
+      const updated = { ...prev };
+      containerIds.forEach((id) => delete updated[id]);
       return updated;
     });
   };
@@ -80,9 +89,15 @@ const Dashboard = ({ verified }: Props) => {
           ))}
         </div>
 
-        <div className="d-flex justify-content-center mt-5">
+        <div className="d-flex justify-content-center mt-5 gap-3">
           <AddContainerButton
             onAddContainer={(containerId) => addContainer(containerId)}
+          />
+          <DeleteContainersButton
+            containers={containersRacksCount}
+            onDeleteContainers={(containerIds: string[]) =>
+              deleteContainers(containerIds)
+            }
           />
         </div>
       </div>
