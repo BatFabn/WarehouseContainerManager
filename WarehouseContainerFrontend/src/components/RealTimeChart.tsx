@@ -13,13 +13,13 @@ import SuggestedConditions from "./SuggestedConditions";
 import { useContainerRackState } from "../store/containerRackState";
 
 interface Props {
-  queryContainerId: number;
-  queryRackId: number;
+  queryContainerId: string;
+  queryRackId: string;
 }
 
 interface SensorData {
-  container_id: number;
-  rack_id: number;
+  container_id: string;
+  rack_id: string;
   fruit: string;
   temperature: number;
   humidity: number;

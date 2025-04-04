@@ -19,16 +19,13 @@ const RackPage = ({ verified }: Props) => {
     else if (value === "Early Spoilage") setStatus("warning");
     else setStatus("success");
   };
-  const value = getContainerRackState(
-    parseInt(containerId ?? ""),
-    parseInt(rackId ?? "")
-  )?.status;
+  const value = getContainerRackState(containerId ?? "", rackId ?? "")?.status;
 
   useEffect(() => {
     updateStatus(value);
     console.log(
       "Rack State:",
-      getContainerRackState(parseInt(containerId ?? ""), parseInt(rackId ?? ""))
+      getContainerRackState(containerId ?? "", rackId ?? "")
     );
   }, [value]);
 
@@ -37,10 +34,7 @@ const RackPage = ({ verified }: Props) => {
       <NavBar verified={verified} />
       <h2>Container #{containerId}</h2>
       <h1>Rack #{rackId}</h1>
-      <RealTimeGraph
-        queryContainerId={parseInt(containerId!)}
-        queryRackId={parseInt(rackId!)}
-      />
+      <RealTimeGraph queryContainerId={containerId!} queryRackId={rackId!} />
     </div>
   );
 };

@@ -1,14 +1,17 @@
 import { Link } from "react-router-dom";
 import { useContainerRackState } from "../store/containerRackState";
 import { useEffect } from "react";
+import DeleteRackButton from "./DeleteRackButton";
 
 interface Props {
-  id: number;
+  id: string;
+  rackIds: string[];
+  onDeleteRack: (rackId: string) => void;
 }
 
 interface SensorData {
-  container_id: number;
-  rack_id: number;
+  container_id: string;
+  rack_id: string;
   fruit: string;
   temperature: number;
   humidity: number;
@@ -20,7 +23,7 @@ interface SensorData {
 
 const warehouseUrl = import.meta.env.VITE_WAREHOUSE_URL || "Connection error";
 
-const Container = ({ id }: Props) => {
+const Container = ({ id, rackIds, onDeleteRack }: Props) => {
   const { addOrUpdateContainerRackState, getContainerRackState } =
     useContainerRackState();
 
@@ -70,160 +73,65 @@ const Container = ({ id }: Props) => {
 
   return (
     <div className="accordion" id={`accordion-${id}`}>
-      <div className="accordion-item">
-        <h2 className="accordion-header m-1">
-          <button
-            className={`accordion-button bg-${getStatus(
-              getContainerRackState(id, 1)?.status
-            )} text-white`}
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target={`#collapse-${id}1`}
-            aria-expanded="false"
-            aria-controls={`collapse-${id}1`}
-          >
-            Rack #1
-          </button>
-        </h2>
-        <div
-          id={`collapse-${id}1`}
-          className="accordion-collapse collapse"
-          data-bs-parent={`#accordion-${id}`}
-        >
-          <div className="accordion-body">
-            <div className="card">
-              <ul className="list-group list-group-flush">
-                <li className="list-group-item">
-                  Temperature: {getContainerRackState(id, 1)?.temperature}
-                </li>
-                <li className="list-group-item">
-                  Humidity: {getContainerRackState(id, 1)?.humidity}
-                </li>
-                <li className="list-group-item">
-                  Methane: {getContainerRackState(id, 1)?.methane}
-                </li>
-                <li className="list-group-item">
-                  Time:{" "}
-                  {getContainerRackState(id, 3)?.timestamp &&
-                    new Date(
-                      getContainerRackState(id, 3)?.timestamp!
-                    ).toLocaleString()}
-                </li>
-              </ul>
-            </div>
-            <div className="hstack gap-3">
-              <Link className="icon-link" to={`/rack/${String(id)}/1`}>
-                Go to
-              </Link>
-              <button type="button" className="btn btn-danger ms-auto">
-                Stop
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="accordion-item">
-        <h2 className="accordion-header m-1">
-          <button
-            className={`accordion-button bg-${getStatus(
-              getContainerRackState(id, 2)?.status
-            )} text-white`}
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target={`#collapse-${id}2`}
-            aria-expanded="false"
-            aria-controls={`collapse-${id}2`}
-          >
-            Rack #2
-          </button>
-        </h2>
-        <div
-          id={`collapse-${id}2`}
-          className="accordion-collapse collapse"
-          data-bs-parent={`#accordion-${id}`}
-        >
-          <div className="card">
-            <ul className="list-group list-group-flush">
-              <li className="list-group-item">
-                Temperature: {getContainerRackState(id, 2)?.temperature}
-              </li>
-              <li className="list-group-item">
-                Humidity: {getContainerRackState(id, 2)?.humidity}
-              </li>
-              <li className="list-group-item">
-                Methane: {getContainerRackState(id, 2)?.methane}
-              </li>
-              <li className="list-group-item">
-                Time:{" "}
-                {getContainerRackState(id, 3)?.timestamp &&
-                  new Date(
-                    getContainerRackState(id, 3)?.timestamp!
-                  ).toLocaleString()}
-              </li>
-            </ul>
-          </div>
-          <div className="hstack gap-3">
-            <Link className="icon-link" to={`/rack/${String(id)}/2`}>
-              Go to
-            </Link>
-            <button type="button" className="btn btn-danger ms-auto">
-              Stop
+      {rackIds.map((rackId: string) => (
+        <div className="accordion-item" key={rackId}>
+          <h2 className="accordion-header m-1">
+            <button
+              className={`accordion-button bg-${getStatus(
+                getContainerRackState(id, rackId)?.status
+              )} text-white`}
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target={`#collapse-${id}${rackId}`}
+              aria-expanded="false"
+              aria-controls={`collapse-${id}${rackId}`}
+            >
+              Rack #{rackId}
             </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="accordion-item">
-        <h2 className="accordion-header m-1">
-          <button
-            className={`accordion-button bg-${getStatus(
-              getContainerRackState(id, 3)?.status
-            )} text-white`}
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target={`#collapse-${id}3`}
-            aria-expanded="false"
-            aria-controls={`collapse-${id}3`}
+          </h2>
+          <div
+            id={`collapse-${id}${rackId}`}
+            className="accordion-collapse collapse"
+            data-bs-parent={`#accordion-${id}`}
           >
-            Rack #3
-          </button>
-        </h2>
-        <div
-          id={`collapse-${id}3`}
-          className="accordion-collapse collapse"
-          data-bs-parent={`#accordion-${id}`}
-        >
-          <div className="card">
-            <ul className="list-group list-group-flush">
-              <li className="list-group-item">
-                Temperature: {getContainerRackState(id, 3)?.temperature}
-              </li>
-              <li className="list-group-item">
-                Humidity: {getContainerRackState(id, 3)?.humidity}
-              </li>
-              <li className="list-group-item">
-                Methane: {getContainerRackState(id, 3)?.methane}
-              </li>
-              <li className="list-group-item">
-                Time:{" "}
-                {getContainerRackState(id, 3)?.timestamp &&
-                  new Date(
-                    getContainerRackState(id, 3)?.timestamp!
-                  ).toLocaleString()}
-              </li>
-            </ul>
-          </div>
-          <div className="hstack gap-3">
-            <Link className="icon-link" to={`/rack/${String(id)}/3`}>
-              Go to
-            </Link>
-            <button type="button" className="btn btn-danger ms-auto">
-              Stop
-            </button>
+            <div className="accordion-body">
+              <div className="card">
+                <ul className="list-group list-group-flush">
+                  <li className="list-group-item">
+                    Temperature:{" "}
+                    {getContainerRackState(id, rackId)?.temperature}
+                  </li>
+                  <li className="list-group-item">
+                    Humidity: {getContainerRackState(id, rackId)?.humidity}
+                  </li>
+                  <li className="list-group-item">
+                    Methane: {getContainerRackState(id, rackId)?.methane}
+                  </li>
+                  <li className="list-group-item">
+                    Time:{" "}
+                    {getContainerRackState(id, rackId)?.timestamp &&
+                      new Date(
+                        getContainerRackState(id, rackId)?.timestamp!
+                      ).toLocaleString()}
+                  </li>
+                </ul>
+              </div>
+              <div className="hstack gap-3">
+                <Link
+                  className="icon-link"
+                  to={`/rack/${String(id)}/${rackId}`}
+                >
+                  Go to
+                </Link>
+                <DeleteRackButton
+                  id={rackId}
+                  onDeleteRack={() => onDeleteRack(rackId)}
+                />
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      ))}
     </div>
   );
 };

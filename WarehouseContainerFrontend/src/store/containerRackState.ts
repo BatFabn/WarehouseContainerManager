@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
 interface SensorData {
-  container_id: number;
-  rack_id: number;
+  container_id: string;
+  rack_id: string;
   fruit: string;
   temperature: number;
   humidity: number;
@@ -16,8 +16,8 @@ interface ContainerRackState {
   data: Record<string, SensorData>;
   addOrUpdateContainerRackState: (newData: SensorData) => void;
   getContainerRackState: (
-    containerId: number,
-    rackId: number
+    containerId: string,
+    rackId: string
   ) => SensorData | null;
 }
 
