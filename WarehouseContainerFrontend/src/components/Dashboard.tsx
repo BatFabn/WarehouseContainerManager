@@ -47,37 +47,45 @@ const Dashboard = ({ verified }: Props) => {
   };
 
   return (
-    <div>
+    <div className="bg-dark min-vh-100">
       <NavBar verified={verified} />
-      <div className="container overflow-hidden text-center p-5">
-        <div className="row g-5">
+
+      <div className="container py-5">
+        <div className="row gy-5 justify-content-center">
           {Object.keys(containersRacksCount).map((containerId: string) => (
-            <div className="col-6 bg-secondary text-white p-4">
-              <Container
-                id={containerId}
-                rackIds={containersRacksCount[containerId]}
-                onDeleteRack={(rackId) => deleteRack(containerId, rackId)}
-              />
-              <div className="p-3 fs-3">Container #{containerId}</div>
-              <div className="hstack px-5">
-                <DeleteContainerButton
-                  id={containerId}
-                  onDeleteContainer={(containerId) =>
-                    deleteContainer(containerId)
-                  }
-                />
-                <AddRackButton
-                  containerId={containerId}
-                  onAddRack={(rackId) => addRack(containerId, rackId)}
-                />
+            <div key={containerId} className="col-md-6">
+              <div className="card shadow rounded-4 overflow-hidden">
+                <div className="card-header text-white fs-4 fw-semibold">
+                  Container #{containerId}
+                </div>
+                <div className="card-body bg-dark">
+                  <Container
+                    id={containerId}
+                    rackIds={containersRacksCount[containerId]}
+                    onDeleteRack={(rackId) => deleteRack(containerId, rackId)}
+                  />
+                </div>
+                <div className="card-footer bg-dark d-flex justify-content-between">
+                  <DeleteContainerButton
+                    id={containerId}
+                    onDeleteContainer={(id) => deleteContainer(id)}
+                  />
+                  <AddRackButton
+                    containerId={containerId}
+                    onAddRack={(rackId) => addRack(containerId, rackId)}
+                  />
+                </div>
               </div>
             </div>
           ))}
         </div>
+
+        <div className="d-flex justify-content-center mt-5">
+          <AddContainerButton
+            onAddContainer={(containerId) => addContainer(containerId)}
+          />
+        </div>
       </div>
-      <AddContainerButton
-        onAddContainer={(containerId) => addContainer(containerId)}
-      />
     </div>
   );
 };

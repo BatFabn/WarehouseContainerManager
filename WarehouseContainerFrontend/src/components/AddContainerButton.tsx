@@ -1,3 +1,4 @@
+import { PlusCircle } from "lucide-react";
 import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 
@@ -21,10 +22,14 @@ const AddContainerButton: React.FC<Props> = ({ onAddContainer }) => {
 
   return (
     <div>
-      <Button variant="primary" onClick={() => setShow(true)}>
+      <Button
+        variant="success"
+        className="d-flex align-items-center gap-2 rounded-pill px-4 py-2 shadow-sm"
+        onClick={() => setShow(true)}
+      >
+        <PlusCircle size={20} />
         Add Container
       </Button>
-
       <Modal show={show} onHide={() => setShow(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Enter Container ID</Modal.Title>

@@ -9,12 +9,19 @@ const NavBar = ({ verified }: Props) => {
   return (
     <div>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
-        <div className="container-fluid ">
+        <div className="container-fluid">
           <Link
             className="navbar-brand"
             to="/dashboard"
-            style={{ color: "#ffb2a5" }}
+            style={{
+              color: "#ffb2a5",
+              fontWeight: "600",
+              fontSize: "1.75rem",
+              letterSpacing: "1px",
+              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            }}
           >
+            <i className="bi bi-box-seam me-2"></i>
             Warehouse Container Manager
           </Link>
           <button
@@ -28,25 +35,26 @@ const NavBar = ({ verified }: Props) => {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div className="collapse navbar-collapse " id="navbarNavAltMarkup">
-            <div className="navbar-nav ms-auto">
-              <Link
-                className="nav-link active"
-                aria-current="page"
-                to="/dashboard"
-              >
+          <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div className="navbar-nav ms-auto text-center">
+              <Link className="nav-link px-3" to="/dashboard">
                 Home
               </Link>
-              <Link className="nav-link" to="/members">
+              <Link className="nav-link px-3" to="/members">
                 Members
               </Link>
-              <Link className="nav-link text-danger" to="/" onClick={verified}>
+              <Link
+                className="nav-link px-3 text-danger fw-semibold"
+                to="/"
+                onClick={verified}
+              >
                 Log out
               </Link>
             </div>
           </div>
         </div>
       </nav>
+
       <HelpOffCanvas />
     </div>
   );

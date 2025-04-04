@@ -26,7 +26,11 @@ function HelpOffCanvas() {
 
   return (
     <div>
-      <button className="btn btn-secondary" onClick={openOffcanvas}>
+      <button
+        className="btn btn-outline-info d-flex align-items-center gap-2 px-3 py-2 shadow-sm"
+        onClick={openOffcanvas}
+      >
+        <i className="bi bi-question-circle-fill"></i>
         Help
       </button>
 
@@ -36,35 +40,35 @@ function HelpOffCanvas() {
         id="HelpOffCanvas"
         aria-labelledby="HelpOffCanvasLabel"
       >
-        <div className="offcanvas-header">
+        <div className="offcanvas-header text-white">
           <h5 className="offcanvas-title" id="HelpOffCanvasLabel">
             Help
           </h5>
           <button
             type="button"
-            className="btn-close"
+            className="btn-close btn-close-white"
             onClick={closeOffcanvas}
             aria-label="Close"
           ></button>
         </div>
         <div className="offcanvas-body">
-          <div className="d-flex justify-content-around">
-            <div className="alert alert-success" role="alert">
-              Rack #
+          <div className="container py-3">
+            <div className="row g-3">
+              <div className="col-md-4 text-center">
+                <div className="alert alert-success mb-2">Rack #</div>
+                <div className="text-success fw-semibold">Good Condition</div>
+              </div>
+              <div className="col-md-4 text-center">
+                <div className="alert alert-warning mb-2">Rack #</div>
+                <div className="text-warning fw-semibold">
+                  Spoilage Detected
+                </div>
+              </div>
+              <div className="col-md-4 text-center">
+                <div className="alert alert-danger mb-2">Rack #</div>
+                <div className="text-danger fw-semibold">Spoilt</div>
+              </div>
             </div>
-            - Good condition
-          </div>
-          <div className="d-flex justify-content-around">
-            <div className="alert alert-warning" role="alert">
-              Rack #
-            </div>
-            - Spoilage detected
-          </div>
-          <div className="d-flex justify-content-around">
-            <div className="alert alert-danger" role="alert">
-              Rack #
-            </div>
-            - Spoilt
           </div>
         </div>
       </div>
