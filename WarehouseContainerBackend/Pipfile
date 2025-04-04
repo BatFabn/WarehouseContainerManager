@@ -16,9 +16,10 @@ motor = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 certifi = "*"
 python-jose = {extras = ["cryptography"], version = "*"}
-passlib = {extras = ["bcrypt"], version = "*"}
 pyjwt = "*"
 pydantic = {extras = ["email"], version = "*"}
+bcrypt = "==4.0.1"
+passlib = {extras = ["bcrypt"], version = "*"}
 
 [dev-packages]
 httpx = "*"

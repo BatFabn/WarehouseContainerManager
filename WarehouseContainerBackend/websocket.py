@@ -11,7 +11,15 @@ from database import db
 from auth import router as auth_router
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Starts the Redis listener in the background during FastAPI's lifespan."""
+    redis_task = asyncio.create_task(
+        redis_listener())  # Runs in the background
+    yield
+    redis_task.cancel()  # Cleanup when FastAPI shuts down
+
+app = FastAPI(lifespan=lifespan)
 app.include_router(auth_router)
 
 load_dotenv()
@@ -108,17 +116,6 @@ async def insert_data_to_db(data):
         print("Data inserted into MongoDB.")
     except Exception as e:
         print(f"Failed to insert data into MongoDB: {e}")
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Starts the Redis listener in the background during FastAPI's lifespan."""
-    redis_task = asyncio.create_task(
-        redis_listener())  # Runs in the background
-    yield
-    redis_task.cancel()  # Cleanup when FastAPI shuts down
-
-app = FastAPI(lifespan=lifespan)
 
 
 @app.websocket("/subscribe")

@@ -19,7 +19,7 @@ async def signup(user: UserCreate):
             status_code=400, detail="Password too short (min 6 characters)")
 
     hashed_pwd = hash_password(user.password)
-    await users_collection.insert_one({"email": user.email, "password": hashed_pwd})
+    await users_collection.insert_one({"email": user.email, "hashed_password": hashed_pwd})
     return {"message": "User created"}
 
 
