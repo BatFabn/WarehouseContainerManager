@@ -6,8 +6,8 @@ const App: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) navigate("/dashboard");
+    const user = localStorage.getItem("user");
+    if (user) navigate("/dashboard");
   });
 
   return (

@@ -3,32 +3,38 @@ import Container from "./Container";
 import DeleteContainerButton from "./DeleteContainerButton";
 import AddRackButton from "./AddRackButton";
 import { useEffect, useState } from "react";
-import AddContainerButton from "./AddContainerButton";
+import AddContainersButton from "./AddContainerButton";
 import DeleteContainersButton from "./DeleteContainersButton";
 import { useNavigate } from "react-router-dom";
+import { useUserActionState } from "../store/userActionState";
 
 const Dashboard = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!localStorage.getItem("token")) {
-      navigate("/");
-    }
-  }, [navigate]);
-
   const [containersRacksCount, setContainersRacksCount] = useState<
     Record<string, string[]>
   >({ "1": ["1", "2", "3"] });
+  const [action, setAction] = useState<string>("");
+  const navigate = useNavigate();
+  const { updateUserActionState } = useUserActionState();
 
-  const addContainer = (containerId: string) => {
+  const addContainers = (containerIds: string[]) => {
+    setAction(
+      `Added Container #${containerIds.join(
+        ", "
+      )} on ${new Date().toLocaleString()}`
+    );
     setContainersRacksCount((prev) => {
       const updated = { ...prev };
-      if (!updated[containerId]) updated[containerId] = [];
+      containerIds.forEach((containerId) => {
+        if (!updated[containerId]) updated[containerId] = [];
+      });
       return updated;
     });
   };
 
   const deleteContainer = (containerId: string) => {
+    setAction(
+      `Deleted Container #${containerId} on ${new Date().toLocaleString()}`
+    );
     setContainersRacksCount((prev) => {
       const updated = { ...prev };
       delete updated[containerId];
@@ -37,6 +43,11 @@ const Dashboard = () => {
   };
 
   const deleteContainers = (containerIds: string[]) => {
+    setAction(
+      `Deleted Containers #${containerIds.join(
+        ", "
+      )} on ${new Date().toLocaleString()}`
+    );
     setContainersRacksCount((prev) => {
       const updated = { ...prev };
       containerIds.forEach((id) => delete updated[id]);
@@ -45,6 +56,9 @@ const Dashboard = () => {
   };
 
   const addRack = (containerId: string, rackId: string) => {
+    setAction(
+      `Added Rack #{rackId} in Container #${containerId} on ${new Date().toLocaleString()}`
+    );
     setContainersRacksCount((prev) => ({
       ...prev,
       [containerId]: [...(prev[containerId] || []), rackId],
@@ -52,6 +66,9 @@ const Dashboard = () => {
   };
 
   const deleteRack = (containerId: string, rackId: string) => {
+    setAction(
+      `Deleted Rack #{rackId} in Container #${containerId} on ${new Date().toLocaleString()}`
+    );
     setContainersRacksCount((prev) => ({
       ...prev,
       [containerId]: (prev[containerId] || []).filter(
@@ -59,6 +76,17 @@ const Dashboard = () => {
       ),
     }));
   };
+
+  useEffect(() => {
+    if (!localStorage.getItem("user")) {
+      navigate("/");
+    }
+
+    updateUserActionState(
+      JSON.parse(localStorage.getItem("user")!)[0],
+      `${action}`
+    );
+  }, [navigate, action]);
 
   return (
     <div className="bg-dark min-vh-100">
@@ -95,8 +123,8 @@ const Dashboard = () => {
         </div>
 
         <div className="d-flex justify-content-center mt-5 gap-3">
-          <AddContainerButton
-            onAddContainer={(containerId) => addContainer(containerId)}
+          <AddContainersButton
+            onAddContainer={(containerIds) => addContainers(containerIds)}
           />
           <DeleteContainersButton
             containers={containersRacksCount}

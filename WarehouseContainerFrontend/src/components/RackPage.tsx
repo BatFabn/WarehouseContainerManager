@@ -11,7 +11,7 @@ const RackPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!localStorage.getItem("token")) navigate("/");
+    if (!localStorage.getItem("user")) navigate("/");
   }, [navigate]);
 
   const updateStatus = (value: string | undefined) => {

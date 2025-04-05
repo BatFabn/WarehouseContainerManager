@@ -43,7 +43,7 @@ const NavBar = () => {
                 className="nav-link px-3 text-danger fw-semibold"
                 to="/"
                 onClick={() => {
-                  localStorage.removeItem("token");
+                  localStorage.removeItem("user");
                 }}
               >
                 Log out

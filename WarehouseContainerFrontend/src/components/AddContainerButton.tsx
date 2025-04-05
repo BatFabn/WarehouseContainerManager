@@ -3,10 +3,10 @@ import { Button, Modal, Form } from "react-bootstrap";
 import { PlusCircle } from "lucide-react";
 
 interface Props {
-  onAddContainer: (containerId: string) => void;
+  onAddContainer: (containerId: string[]) => void;
 }
 
-const AddContainerButton = ({ onAddContainer }: Props) => {
+const AddContainersButton = ({ onAddContainer }: Props) => {
   const [show, setShow] = useState(false);
   const [containerInput, setContainerInput] = useState("");
 
@@ -16,8 +16,12 @@ const AddContainerButton = ({ onAddContainer }: Props) => {
       .map((id) => id.trim())
       .filter((id) => id !== "");
 
-    ids.forEach((id) => onAddContainer(id));
+    const containerIds: string[] = [];
+    ids.forEach((id) => {
+      containerIds.push(id);
+    });
 
+    onAddContainer(containerIds);
     setContainerInput("");
     setShow(false);
   };
@@ -65,4 +69,4 @@ const AddContainerButton = ({ onAddContainer }: Props) => {
   );
 };
 
-export default AddContainerButton;
+export default AddContainersButton;

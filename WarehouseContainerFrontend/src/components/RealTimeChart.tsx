@@ -44,7 +44,6 @@ const RealTimeText = ({
   queryRackId: rackId,
 }: Props) => {
   const [data, setData] = useState<SensorData | null>(null);
-  const [rackDataStatus, setRackDataStatus] = useState<string>("No data");
   const [chartData, setChartData] = useState<Array<any>>([]);
   const [wsStatus, setWsStatus] = useState<
     "Connecting" | "Connected" | "Disconnected"

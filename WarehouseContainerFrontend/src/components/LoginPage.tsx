@@ -11,7 +11,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (localStorage.getItem("token")) navigate("/dashboard");
+    if (localStorage.getItem("user")) navigate("/dashboard");
   }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -31,7 +31,7 @@ const LoginPage = () => {
       });
 
       const token: string = response.data.access_token;
-      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify([email, token]));
       navigate("/dashboard");
     } catch (err: any) {
       console.error(err);
