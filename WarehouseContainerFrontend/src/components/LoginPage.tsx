@@ -3,6 +3,8 @@ import axios from "axios";
 import AnimatedText from "./AnimatedText";
 import { useNavigate } from "react-router-dom";
 
+const warehouseUrl = import.meta.env.VITE_WAREHOUSE_URL || "Connection error";
+
 const LoginPage = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -25,7 +27,7 @@ const LoginPage = () => {
     const endpoint = isLogin ? "/login" : "/signup";
 
     try {
-      const response = await axios.post(`http://localhost:2000${endpoint}`, {
+      const response = await axios.post(`http://${warehouseUrl}${endpoint}`, {
         email,
         password,
       });

@@ -78,7 +78,7 @@ const RealTimeText = ({
     };
 
     fetchData();
-  }, []);
+  }, [warehouseUrl]);
 
   useEffect(() => {
     let wsTimeout: NodeJS.Timeout;
@@ -141,7 +141,7 @@ const RealTimeText = ({
       console.log("🛑 WebSocket closed.");
       clearTimeout(wsTimeout);
     };
-  }, [containerId, rackId]);
+  }, [warehouseUrl, containerId, rackId]);
 
   useEffect(() => {
     if (data) {
