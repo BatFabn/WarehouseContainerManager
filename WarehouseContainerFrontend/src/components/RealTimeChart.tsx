@@ -44,7 +44,7 @@ const RealTimeText = ({
   queryRackId: rackId,
 }: Props) => {
   const [data, setData] = useState<SensorData | null>(null);
-  const [rackDataStatus, setRackDataStatus] = useState<string>("");
+  const [rackDataStatus, setRackDataStatus] = useState<string>("No data");
   const [chartData, setChartData] = useState<Array<any>>([]);
   const [wsStatus, setWsStatus] = useState<
     "Connecting" | "Connected" | "Disconnected"
@@ -72,7 +72,7 @@ const RealTimeText = ({
 
           setChartData(formattedData);
           setData(initialData[initialData.length - 1]); // Set latest reading
-        } else setRackDataStatus("No data");
+        }
       } catch (error) {
         console.error("❌ Error fetching sensor data:", error);
       }
@@ -106,7 +106,6 @@ const RealTimeText = ({
       ) {
         return;
       }
-      setRackDataStatus("");
       setData(receivedData);
 
       setChartData((prevData) => [
@@ -158,92 +157,86 @@ const RealTimeText = ({
 
   return (
     <div className="container bg-dark text-white p-3">
-      {rackDataStatus === "" ? (
-        <>
-          <h2>📡 Real-Time Data</h2>
+      <h2>📡 Real-Time Data</h2>
 
-          {/* ✅ Server Status Indicator */}
-          <div className="mb-3">
-            {wsStatus === "Connected" ? (
-              <span style={{ color: "lightgreen", fontWeight: "bold" }}>
-                🟢 Connected to Server
-              </span>
-            ) : wsStatus === "Connecting" ? (
-              <span style={{ color: "yellow", fontWeight: "bold" }}>
-                🟡 Connecting to Server...
-              </span>
-            ) : (
-              <span style={{ color: "red", fontWeight: "bold" }}>
-                🔴 Server Down
-              </span>
-            )}
-          </div>
+      {/* ✅ Server Status Indicator */}
+      <div className="mb-3">
+        {wsStatus === "Connected" ? (
+          <span style={{ color: "lightgreen", fontWeight: "bold" }}>
+            🟢 Connected to Server
+          </span>
+        ) : wsStatus === "Connecting" ? (
+          <span style={{ color: "yellow", fontWeight: "bold" }}>
+            🟡 Connecting to Server...
+          </span>
+        ) : (
+          <span style={{ color: "red", fontWeight: "bold" }}>
+            🔴 Server Down
+          </span>
+        )}
+      </div>
 
-          {wsStatus === "Connected" && noDataReceived && (
-            <p style={{ color: "orange", fontWeight: "bold" }}>
-              ⚠️ No new data received from Sensor!
-            </p>
-          )}
+      {wsStatus === "Connected" && noDataReceived && (
+        <p style={{ color: "orange", fontWeight: "bold" }}>
+          ⚠️ No new data received from Sensor!
+        </p>
+      )}
 
-          <div className="border p-3 mb-4">
-            <h4>📊 Latest Sensor Readings</h4>
-            {data ? (
-              <ul>
-                <li>
-                  <strong>Food Item:</strong> {data.fruit}
-                </li>
-                <li>
-                  <strong>Status:</strong> {data.status}
-                </li>
-                <li>
-                  <strong>Methane (ppm):</strong> {data.methane}
-                </li>
-                <li>
-                  <strong>Temperature (°C):</strong> {data.temperature}
-                </li>
-                <li>
-                  <strong>Humidity (%):</strong> {data.humidity}
-                </li>
-                <li>
-                  <strong>Last Detected:</strong>{" "}
-                  {new Date(data.timestamp).toLocaleString()}
-                </li>
-              </ul>
-            ) : (
-              <p>⌛ Loading data...</p>
-            )}
-          </div>
+      <div className="border p-3 mb-4">
+        <h4>📊 Latest Sensor Readings</h4>
+        {data ? (
+          <ul>
+            <li>
+              <strong>Food Item:</strong> {data.fruit}
+            </li>
+            <li>
+              <strong>Status:</strong> {data.status}
+            </li>
+            <li>
+              <strong>Methane (ppm):</strong> {data.methane}
+            </li>
+            <li>
+              <strong>Temperature (°C):</strong> {data.temperature}
+            </li>
+            <li>
+              <strong>Humidity (%):</strong> {data.humidity}
+            </li>
+            <li>
+              <strong>Last Detected:</strong>{" "}
+              {new Date(data.timestamp).toLocaleString()}
+            </li>
+          </ul>
+        ) : (
+          <p>⌛ Loading data...</p>
+        )}
+      </div>
 
-          <h3>📈 Live Graph</h3>
-          <ResponsiveContainer width="100%" height={400}>
-            {chartData.length > 0 ? (
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" tick={{ fill: "white" }} />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="temperature" stroke="#8884d8" />
-                <Line type="monotone" dataKey="humidity" stroke="#82ca9d" />
-                <Line type="monotone" dataKey="methane" stroke="#ff7300" />
-              </LineChart>
-            ) : (
-              <p>📉 Waiting for sensor data...</p>
-            )}
-          </ResponsiveContainer>
+      <h3>📈 Live Graph</h3>
+      <ResponsiveContainer width="100%" height={400}>
+        {chartData.length > 0 ? (
+          <LineChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" tick={{ fill: "white" }} />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="temperature" stroke="#8884d8" />
+            <Line type="monotone" dataKey="humidity" stroke="#82ca9d" />
+            <Line type="monotone" dataKey="methane" stroke="#ff7300" />
+          </LineChart>
+        ) : (
+          <p>📉 Waiting for sensor data...</p>
+        )}
+      </ResponsiveContainer>
 
-          {data && (
-            <SuggestedConditions
-              sensorData={{
-                foodIndex: foodEncoding[data.fruit] ?? -1,
-                methane: data.methane,
-                timestamp: data.timestamp,
-              }}
-            />
-          )}
-        </>
-      ) : (
-        <h1>{rackDataStatus}</h1>
+      {data && (
+        <SuggestedConditions
+          sensorData={{
+            foodIndex: foodEncoding[data.fruit] ?? -1,
+            methane: data.methane,
+            timestamp: data.timestamp,
+          }}
+        />
       )}
     </div>
   );

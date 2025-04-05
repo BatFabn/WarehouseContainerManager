@@ -5,12 +5,11 @@ function HelpOffCanvas() {
   let offcanvasInstance: Offcanvas | null = null;
 
   useEffect(() => {
-    // Initialize the offcanvas when the component mounts
     const offcanvasElement = document.getElementById("HelpOffCanvas");
     if (offcanvasElement) {
       offcanvasInstance = new Offcanvas(offcanvasElement);
     }
-  }, []);
+  }, [offcanvasInstance]);
 
   const openOffcanvas = () => {
     if (offcanvasInstance) {
