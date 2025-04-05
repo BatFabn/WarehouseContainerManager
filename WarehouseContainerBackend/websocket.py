@@ -229,9 +229,12 @@ async def get_rack_data(
 ):
     collection = db["containers_managed"]
 
-    container = await collection.find({"email": email}).to_list()
+    container_docs = await collection.find({"email": email}).to_list(1)
 
-    results = container[0]["containers"]
+    if not container_docs:
+        raise HTTPException(status_code=404, detail="Email not found")
+
+    results = container_docs[0].get("containers", [])
 
     return results
 
