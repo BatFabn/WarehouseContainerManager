@@ -22,7 +22,7 @@ async def send_sensor_data():
             # Simulate sensor data
             sensor_data["fruit"] = "banana"
             sensor_data["container_id"] = "2"
-            sensor_data["rack_id"] = "3"
+            sensor_data["rack_id"] = "2"
             sensor_data["temperature"] = round(random.uniform(18, 21) if random.random(
             ) < 0.5 else random.uniform(27, 30), 2)  # Slightly off ideal
             sensor_data["humidity"] = round(

@@ -6,10 +6,12 @@ from utils import hash_password, verify_password, create_access_token
 router = APIRouter()
 
 users_collection = db["users"]
+users_collection.create_index("email", unique=True)
 
 
 @router.post("/signup")
 async def signup(user: UserCreate):
+    users_collection = db["users"]
     existing = await users_collection.find_one({"email": user.email})
     if existing:
         raise HTTPException(status_code=400, detail="User already exists")

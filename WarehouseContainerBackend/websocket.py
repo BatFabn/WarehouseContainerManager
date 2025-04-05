@@ -1,14 +1,16 @@
 import os
 import json
 from typing import Set
-from fastapi import FastAPI, Query, WebSocket
+from fastapi import FastAPI, HTTPException, Query, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+from pymongo.errors import DuplicateKeyError
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 import asyncio
 import redis
 from database import db
 from auth import router as auth_router
+from models import ContainersManaged
 
 
 @asynccontextmanager
@@ -25,10 +27,11 @@ app.include_router(auth_router)
 load_dotenv()
 MAX_DOCUMENTS_PER_ID = int(os.getenv("MONGO_MAX_DOCUMENTS_PER_ID"))
 MAX_DOCUMENTS = int(os.getenv("MONGO_MAX_DOCUMENTS"))
-COLLECTION_NAME = "sensor_data"
 
-collection = db[COLLECTION_NAME]
+collection = db["sensor_data"]
 collection.create_index([("container_id", 1), ("rack_id", 1)])
+collection = db["containers_managed"]
+collection.create_index("email", unique=True)
 
 redis_host = os.getenv("REDIS_HOST")
 redis_port = int(os.getenv("REDIS_PORT"))
@@ -82,6 +85,7 @@ async def redis_listener():
 
 async def handle_database_operations(data):
     """Handles database insertions and cleanups asynchronously."""
+    collection = db["sensor_data"]
     try:
         query = {"container_id": data.get(
             "container_id"), "rack_id": data.get("rack_id")}
@@ -111,6 +115,7 @@ async def handle_database_operations(data):
 
 async def insert_data_to_db(data):
     """Insert data into MongoDB asynchronously."""
+    collection = db["sensor_data"]
     try:
         await collection.insert_one(data)
         print("Data inserted into MongoDB.")
@@ -140,6 +145,7 @@ async def get_rack_data(
     rack_id: str = Query(...),
     container_id: str = Query(...)
 ):
+    collection = db["sensor_data"]
     """Retrieve documents matching rack_id and container_id."""
     query = {"rack_id": rack_id, "container_id": container_id}
 
@@ -154,6 +160,8 @@ async def get_rack_data(
 @app.get("/data")
 async def get_rack_data():
     """Retrieve documents matching rack_id and container_id."""
+    COLLECTION_NAME = "sensor_data"
+    collection = db[COLLECTION_NAME]
     unique_combos = await db[COLLECTION_NAME].aggregate([
         {"$group": {"_id": {"container_id": "$container_id", "rack_id": "$rack_id"}}}
     ]).to_list(None)
@@ -172,6 +180,58 @@ async def get_rack_data():
         record["_id"] = str(record["_id"])
 
         results.append(record)
+
+    return results
+
+
+@app.post("/containers_managed")
+async def upsert_container_racks(data: ContainersManaged):
+    collection = db["containers_managed"]
+
+    try:
+        user = await collection.find_one({"email": data.email})
+
+        if not user:
+            await collection.insert_one(data.model_dump())
+            return {"message": "New user and containers added."}
+
+        existing_containers = user.get("containers", [])
+
+        for new_container in data.containers:
+            new_container_dict = new_container.model_dump()
+            container_id = new_container_dict["container_id"]
+
+            # Try to find if the container already exists
+            updated = False
+            for container in existing_containers:
+                if container.get("container_id") == container_id:
+                    container["rack_ids"] = new_container_dict["rack_ids"]
+                    updated = True
+                    break
+
+            if not updated:
+                existing_containers.append(new_container_dict)
+
+        await collection.update_one(
+            {"email": data.email},
+            {"$set": {"containers": existing_containers}}
+        )
+
+        return {"message": "Containers updated successfully."}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/containers_managed")
+async def get_rack_data(
+    email: str = Query(...),
+):
+    collection = db["containers_managed"]
+
+    container = await collection.find({"email": email}).to_list()
+
+    results = container[0]["containers"]
 
     return results
 
