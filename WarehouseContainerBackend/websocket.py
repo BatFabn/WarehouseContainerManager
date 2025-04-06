@@ -1,8 +1,10 @@
+from datetime import datetime, timezone
 import os
 import json
 from typing import Set
 from fastapi import FastAPI, HTTPException, Query, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import EmailStr
 from pymongo.errors import DuplicateKeyError
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
@@ -10,7 +12,7 @@ import asyncio
 import redis
 from database import db
 from auth import router as auth_router
-from models import ContainersManaged
+from models import ActionLog, AddAllowedUserRequest, ContainersManaged, Member, UpdateAllowedUserRole
 
 
 @asynccontextmanager
@@ -87,7 +89,7 @@ async def handle_database_operations(data):
     """Handles database insertions and cleanups asynchronously."""
     collection = db["sensor_data"]
     try:
-        query = {"container_id": data.get(
+        query = {"email": data.get("email"), "container_id": data.get(
             "container_id"), "rack_id": data.get("rack_id")}
         count = await collection.count_documents(query)
 
@@ -142,12 +144,13 @@ async def subscribe(websocket: WebSocket):
 
 @app.get("/data/")
 async def get_rack_data(
+    email: str = Query(...),
     rack_id: str = Query(...),
     container_id: str = Query(...)
 ):
     collection = db["sensor_data"]
     """Retrieve documents matching rack_id and container_id."""
-    query = {"rack_id": rack_id, "container_id": container_id}
+    query = {"email": email, "rack_id": rack_id, "container_id": container_id}
 
     documents = await collection.find(query, sort=[("timestamp", -1)]).to_list(1000)
     documents = documents[::-1]
@@ -158,11 +161,13 @@ async def get_rack_data(
 
 
 @app.get("/data")
-async def get_rack_data():
+async def get_rack_data(
+    email: str = Query(...)
+):
     """Retrieve documents matching rack_id and container_id."""
     COLLECTION_NAME = "sensor_data"
     collection = db[COLLECTION_NAME]
-    unique_combos = await db[COLLECTION_NAME].aggregate([
+    unique_combos = await collection.find({"email": email}).aggregate([
         {"$group": {"_id": {"container_id": "$container_id", "rack_id": "$rack_id"}}}
     ]).to_list(None)
 
@@ -171,7 +176,7 @@ async def get_rack_data():
         container_id = combo["_id"]["container_id"]
         rack_id = combo["_id"]["rack_id"]
 
-        records = await db[COLLECTION_NAME].find(
+        records = await collection.find(
             {"container_id": container_id, "rack_id": rack_id},
             sort=[("timestamp", -1)]
         ).limit(1).to_list(1)
@@ -237,6 +242,93 @@ async def get_rack_data(
     results = container_docs[0].get("containers", [])
 
     return results
+
+
+@app.post("/add_member")
+async def add_member(member: Member):
+    members_collection = db["members"]
+    if members_collection.find_one({"email": member.email}):
+        raise HTTPException(status_code=400, detail="Member already exists")
+    members_collection.insert_one(member.dict())
+    return {"message": "Member added"}
+
+
+@app.post("/add_allowed_user")
+async def add_allowed_user(req: AddAllowedUserRequest):
+    members_collection = db["members"]
+    result = members_collection.update_one(
+        {"email": req.owner_email, "allowed_users.email": {"$ne": req.user.email}},
+        {"$push": {"allowed_users": req.user.dict()}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(
+            status_code=400, detail="User already exists or owner not found")
+    return {"message": "Allowed user added"}
+
+
+@app.post("/log_action")
+async def log_action(log: ActionLog):
+    members_collection = db["members"]
+    member = members_collection.find_one({"email": log.target_email})
+    if not member:
+        raise HTTPException(status_code=404, detail="Member not found")
+
+    if log.performed_by != log.target_email:
+        is_allowed = any(
+            user["email"] == log.performed_by and user["role"] == "View and Manage only"
+            for user in member.get("allowed_users", [])
+        )
+        if not is_allowed:
+            raise HTTPException(
+                status_code=403, detail="You do not have permission to act on behalf")
+
+    action_entry = {
+        "timestamp": datetime.now(timezone.utc),
+        "message": log.message,
+        "performed_by": log.performed_by
+    }
+
+    members_collection.update_one(
+        {"email": log.target_email},
+        {"$push": {"actions": action_entry}}
+    )
+
+    return {"message": "Action logged"}
+
+
+@app.get("/member/{email}")
+async def get_member(email: str):
+    members_collection = db["members"]
+    member = members_collection.find_one({"email": email}, {"_id": 0})
+    if not member:
+        raise HTTPException(status_code=404, detail="Member not found")
+    return member
+
+
+@app.put("/update_role")
+async def update_allowed_user_role(req: UpdateAllowedUserRole):
+    members_collection = db["members"]
+    result = members_collection.update_one(
+        {"email": req.owner_email, "allowed_users.email": req.target_user_email},
+        {"$set": {"allowed_users.$.role": req.new_role}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(
+            status_code=404, detail="Target user not found or already has role")
+    return {"message": "Role updated"}
+
+
+@app.delete("/remove_allowed_user")
+async def remove_allowed_user(owner_email: EmailStr, target_user_email: EmailStr):
+    members_collection = db["members"]
+    result = members_collection.update_one(
+        {"email": owner_email},
+        {"$pull": {"allowed_users": {"email": target_user_email}}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(
+            status_code=404, detail="User not found or already removed")
+    return {"message": "Allowed user removed"}
 
 app.add_middleware(
     CORSMiddleware,

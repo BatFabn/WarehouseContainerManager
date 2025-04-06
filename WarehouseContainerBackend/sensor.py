@@ -20,8 +20,9 @@ async def send_sensor_data():
     async with httpx.AsyncClient() as client:
         while True:
             # Simulate sensor data
-            sensor_data["fruit"] = "banana"
-            sensor_data["container_id"] = "2"
+            sensor_data["email"] = "john.doe@example.com"
+            sensor_data["fruit"] = "apple"
+            sensor_data["container_id"] = "3"
             sensor_data["rack_id"] = "2"
             sensor_data["temperature"] = round(random.uniform(18, 21) if random.random(
             ) < 0.5 else random.uniform(27, 30), 2)  # Slightly off ideal
