@@ -35,13 +35,22 @@ const RackPage = () => {
   return (
     <div className={`text-center bg-${status}`}>
       <NavBar />
-      <h1>
-        {JSON.parse(localStorage.getItem("user") ?? "")[0]} acting as{" "}
-        {getCurrentActor().name}
-      </h1>
+      {JSON.parse(localStorage.getItem("user") ?? "")[0] !==
+      getCurrentActor().email ? (
+        <h1>
+          {JSON.parse(localStorage.getItem("user") ?? "")[0]} acting as{" "}
+          {getCurrentActor().name}
+        </h1>
+      ) : (
+        <h1>{getCurrentActor().email}</h1>
+      )}
       <h2>Container #{containerId}</h2>
       <h1>Rack #{rackId}</h1>
-      <RealTimeGraph queryContainerId={containerId!} queryRackId={rackId!} />
+      <RealTimeGraph
+        email={getCurrentActor().email}
+        queryContainerId={containerId!}
+        queryRackId={rackId!}
+      />
     </div>
   );
 };

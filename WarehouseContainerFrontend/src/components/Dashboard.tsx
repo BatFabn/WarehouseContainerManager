@@ -23,8 +23,7 @@ const Dashboard = () => {
   const { getCurrentActor } = useCurrentActor();
   const navigate = useNavigate();
 
-  const user = JSON.parse(localStorage.getItem("user") || "[]");
-  const email = user?.[0];
+  const email = getCurrentActor().email;
 
   const addContainers = (containerIds: string[]) => {
     setAction(
@@ -171,10 +170,14 @@ const Dashboard = () => {
       <div className="container d-flex flex-column align-items-center py-5">
         {JSON.parse(localStorage.getItem("user") ?? "")[0] !==
         getCurrentActor().email ? (
-          <h1>
-            {JSON.parse(localStorage.getItem("user") ?? "")[0]} acting as{" "}
-            {getCurrentActor().name}
-          </h1>
+          getCurrentActor().name ? (
+            <h1>
+              {JSON.parse(localStorage.getItem("user") ?? "")[0]} acting as{" "}
+              {getCurrentActor().name}
+            </h1>
+          ) : (
+            <h1>Please select an account from accounts.</h1>
+          )
         ) : (
           <h1>{getCurrentActor().email}</h1>
         )}

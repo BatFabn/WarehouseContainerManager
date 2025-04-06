@@ -14,6 +14,7 @@ const ChooseAccount: React.FC = () => {
   const navigate = useNavigate();
   const { updateCurrentActor } = useCurrentActor();
   useEffect(() => {
+    localStorage.removeItem("containers_managed");
     if (!localStorage.getItem("user")) navigate("/");
   }, [navigate]);
 

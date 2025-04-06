@@ -13,6 +13,7 @@ import SuggestedConditions from "./SuggestedConditions";
 import { useContainerRackState } from "../store/containerRackState";
 
 interface Props {
+  email: string;
   queryContainerId: string;
   queryRackId: string;
 }
@@ -40,6 +41,7 @@ const foodEncoding: Record<string, number> = {
 const warehouseUrl = import.meta.env.VITE_WAREHOUSE_URL || "Connection error";
 
 const RealTimeText = ({
+  email,
   queryContainerId: containerId,
   queryRackId: rackId,
 }: Props) => {
@@ -57,7 +59,7 @@ const RealTimeText = ({
         const response = await fetch(
           "https://" +
             warehouseUrl +
-            `/data/?rack_id=${rackId}&container_id=${containerId}`
+            `/data/?email=${email}&rack_id=${rackId}&container_id=${containerId}`
         );
         const initialData = await response.json();
 
@@ -82,7 +84,7 @@ const RealTimeText = ({
 
   useEffect(() => {
     let wsTimeout: NodeJS.Timeout;
-    const ws = new WebSocket("wss://" + warehouseUrl + "/subscribe");
+    const ws = new WebSocket("ws://" + warehouseUrl + "/subscribe");
 
     ws.onopen = () => {
       console.log("✅ WebSocket connected!");

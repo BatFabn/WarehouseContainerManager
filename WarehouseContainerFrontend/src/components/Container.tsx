@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useContainerRackState } from "../store/containerRackState";
 import { useEffect, useState } from "react";
 import DeleteRackButton from "./DeleteRackButton";
+import { useCurrentActor } from "../store/currentActor";
 
 interface Props {
   id: string;
@@ -24,8 +25,6 @@ interface SensorData {
 const warehouseUrl = import.meta.env.VITE_WAREHOUSE_URL || "Connection error";
 
 const Container = ({ id, rackIds, onDeleteRack }: Props) => {
-  const { addOrUpdateContainerRackState, getContainerRackState } =
-    useContainerRackState();
   const [openRack, setOpenRack] = useState<string | null>(null);
 
   const toggleRack = (rackId: string) => {
@@ -37,11 +36,16 @@ const Container = ({ id, rackIds, onDeleteRack }: Props) => {
     else if (value === "Early Spoilage") return "warning";
     else return "success";
   };
+  const { addOrUpdateContainerRackState, getContainerRackState } =
+    useContainerRackState();
+  const { getCurrentActor } = useCurrentActor();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("https://" + warehouseUrl + "/data");
+        const response = await fetch(
+          "https://" + warehouseUrl + `/data?email=${getCurrentActor().email}`
+        );
         const initialData = await response.json();
 
         initialData &&
@@ -58,7 +62,7 @@ const Container = ({ id, rackIds, onDeleteRack }: Props) => {
 
   useEffect(() => {
     let wsTimeout: NodeJS.Timeout;
-    const ws = new WebSocket("wss://" + warehouseUrl + "/subscribe");
+    const ws = new WebSocket("ws://" + warehouseUrl + "/subscribe");
 
     ws.onmessage = (event) => {
       const receivedData = JSON.parse(event.data);
