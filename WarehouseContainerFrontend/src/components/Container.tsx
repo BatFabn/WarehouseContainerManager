@@ -62,7 +62,7 @@ const Container = ({ id, rackIds, onDeleteRack }: Props) => {
 
   useEffect(() => {
     let wsTimeout: NodeJS.Timeout;
-    const ws = new WebSocket("ws://" + warehouseUrl + "/subscribe");
+    const ws = new WebSocket("wss://" + warehouseUrl + "/subscribe");
 
     ws.onmessage = (event) => {
       const receivedData = JSON.parse(event.data);

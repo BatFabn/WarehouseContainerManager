@@ -84,7 +84,7 @@ const RealTimeText = ({
 
   useEffect(() => {
     let wsTimeout: NodeJS.Timeout;
-    const ws = new WebSocket("ws://" + warehouseUrl + "/subscribe");
+    const ws = new WebSocket("wss://" + warehouseUrl + "/subscribe");
 
     ws.onopen = () => {
       console.log("✅ WebSocket connected!");
