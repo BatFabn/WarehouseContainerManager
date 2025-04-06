@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import HelpOffCanvas from "./HelpOffCanvas";
+import { useCurrentActor } from "../store/currentActor";
 
 const NavBar = () => {
+  const { getCurrentActor } = useCurrentActor();
   return (
     <div>
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -39,9 +41,12 @@ const NavBar = () => {
               <Link className="nav-link px-3" to="/account">
                 Accounts
               </Link>
-              <Link className="nav-link px-3" to={`/members`}>
-                Members
-              </Link>
+              {getCurrentActor().email ===
+                JSON.parse(localStorage.getItem("user") ?? "")[0] && (
+                <Link className="nav-link px-3" to={`/members`}>
+                  Members
+                </Link>
+              )}
               <Link
                 className="nav-link px-3 text-danger fw-semibold"
                 to="/"

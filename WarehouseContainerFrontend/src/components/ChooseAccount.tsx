@@ -24,7 +24,10 @@ const ChooseAccount: React.FC = () => {
       type: "original",
       onClick: () => {
         if (!localStorage.getItem("user")) navigate("/");
-        updateCurrentActor(JSON.parse(localStorage.getItem("user")!)[0]);
+        updateCurrentActor(
+          "Owner",
+          JSON.parse(localStorage.getItem("user")!)[0]
+        );
         navigate(`/dashboard`);
       },
     },
@@ -33,7 +36,7 @@ const ChooseAccount: React.FC = () => {
       description: "Manage John’s warehouse as a delegated member.",
       type: "member",
       onClick: () => {
-        updateCurrentActor("john.doe@example.com");
+        updateCurrentActor("John", "john.doe@example.com");
         navigate("/dashboard?owner=john.doe@example.com");
       },
     },
@@ -42,7 +45,7 @@ const ChooseAccount: React.FC = () => {
       description: "Act on behalf of Jane with member privileges.",
       type: "member",
       onClick: () => {
-        updateCurrentActor("jane.smith@example.com");
+        updateCurrentActor("Jane", "jane.smith@example.com");
         navigate("/dashboard?owner=jane.smith@example.com");
       },
     },

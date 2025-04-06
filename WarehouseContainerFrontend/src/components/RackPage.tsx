@@ -35,7 +35,7 @@ const RackPage = () => {
   return (
     <div className={`text-center bg-${status}`}>
       <NavBar />
-      <h1>Acting as {getCurrentActor()}</h1>
+      <h1>Acting as {getCurrentActor().name}</h1>
       <h2>Container #{containerId}</h2>
       <h1>Rack #{rackId}</h1>
       <RealTimeGraph queryContainerId={containerId!} queryRackId={rackId!} />

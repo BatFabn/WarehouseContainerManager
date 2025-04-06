@@ -1,18 +1,21 @@
 import { create } from "zustand";
 
 interface UserActionState {
-  data: string;
-  updateCurrentActor: (actor: string) => void;
-  getCurrentActor: () => string;
+  data: { name: string; email: string };
+  updateCurrentActor: (name: string, email: string) => void;
+  getCurrentActor: () => { name: string; email: string };
 }
 
 export const useCurrentActor = create<UserActionState>((set, get) => ({
-  data: "",
+  data: { name: "", email: "" },
 
-  updateCurrentActor: (actor: string) =>
+  updateCurrentActor: (name: string, email: string) =>
     set(() => {
       return {
-        data: actor,
+        data: {
+          name,
+          email,
+        },
       };
     }),
 

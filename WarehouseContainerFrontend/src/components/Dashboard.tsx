@@ -169,7 +169,7 @@ const Dashboard = () => {
     <div className="bg-dark min-vh-100">
       <NavBar />
       <div className="container d-flex flex-column align-items-center py-5">
-        <h1>Acting as {getCurrentActor()}</h1>
+        <h1>Acting as {getCurrentActor().name}</h1>
         <div className="container py-5">
           <div className="row gy-5 justify-content-center">
             {Object.keys(containersRacksCount).map((containerId: string) => (
