@@ -13,7 +13,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (localStorage.getItem("user")) navigate("/dashboard");
+    if (localStorage.getItem("user")) navigate("/account");
   }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -27,14 +27,14 @@ const LoginPage = () => {
     const endpoint = isLogin ? "/login" : "/signup";
 
     try {
-      const response = await axios.post(`http://${warehouseUrl}${endpoint}`, {
+      const response = await axios.post(`https://${warehouseUrl}${endpoint}`, {
         email,
         password,
       });
 
       const token: string = response.data.access_token;
       localStorage.setItem("user", JSON.stringify([email, token]));
-      navigate("/dashboard");
+      navigate("/account");
     } catch (err: any) {
       console.error(err);
 

@@ -16,16 +16,11 @@ const MemberManagement = () => {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<string>("");
-  const navigate = useNavigate();
   const { getUserActionState } = useUserActionState();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!localStorage.getItem("user")) navigate("/");
-
-    console.log(
-      "action: " +
-        getUserActionState(JSON.parse(localStorage.getItem("user")!)[0])
-    );
   }, [navigate]);
 
   const addMember = () => {

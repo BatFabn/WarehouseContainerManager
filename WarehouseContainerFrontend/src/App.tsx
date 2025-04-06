@@ -7,7 +7,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const user = localStorage.getItem("user");
-    if (user) navigate("/dashboard");
+    if (user) navigate("/account");
   });
 
   return (

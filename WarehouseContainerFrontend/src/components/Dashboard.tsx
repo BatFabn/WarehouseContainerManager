@@ -8,6 +8,7 @@ import DeleteContainersButton from "./DeleteContainersButton";
 import { useNavigate } from "react-router-dom";
 import { useUserActionState } from "../store/userActionState";
 import axios from "axios";
+import { useCurrentActor } from "../store/currentActor";
 
 const warehouseUrl = import.meta.env.VITE_WAREHOUSE_URL || "Connection error";
 
@@ -18,8 +19,9 @@ const Dashboard = () => {
   const [hasFetched, setHasFetched] = useState(false);
   const [action, setAction] = useState<string>("");
   const prevDataRef = useRef<Record<string, string[]>>({});
-  const navigate = useNavigate();
   const { updateUserActionState } = useUserActionState();
+  const { getCurrentActor } = useCurrentActor();
+  const navigate = useNavigate();
 
   const user = JSON.parse(localStorage.getItem("user") || "[]");
   const email = user?.[0];
@@ -151,7 +153,7 @@ const Dashboard = () => {
       );
 
       try {
-        await axios.post(`http://${warehouseUrl}/containers_managed`, {
+        await axios.post(`https://${warehouseUrl}/containers_managed`, {
           email,
           containers: data,
         });
@@ -166,35 +168,37 @@ const Dashboard = () => {
   return (
     <div className="bg-dark min-vh-100">
       <NavBar />
-
-      <div className="container py-5">
-        <div className="row gy-5 justify-content-center">
-          {Object.keys(containersRacksCount).map((containerId: string) => (
-            <div key={containerId} className="col-md-6">
-              <div className="card shadow rounded-4 overflow-hidden">
-                <div className="card-header text-white fs-4 fw-semibold">
-                  Container #{containerId}
-                </div>
-                <div className="card-body bg-dark">
-                  <Container
-                    id={containerId}
-                    rackIds={containersRacksCount[containerId]}
-                    onDeleteRack={(rackId) => deleteRack(containerId, rackId)}
-                  />
-                </div>
-                <div className="card-footer bg-dark d-flex justify-content-between">
-                  <DeleteContainerButton
-                    id={containerId}
-                    onDeleteContainer={(id) => deleteContainer(id)}
-                  />
-                  <AddRackButton
-                    containerId={containerId}
-                    onAddRack={(rackId) => addRack(containerId, rackId)}
-                  />
+      <div className="container d-flex flex-column align-items-center py-5">
+        <h1>Acting as {getCurrentActor()}</h1>
+        <div className="container py-5">
+          <div className="row gy-5 justify-content-center">
+            {Object.keys(containersRacksCount).map((containerId: string) => (
+              <div key={containerId} className="col-md-6">
+                <div className="card shadow rounded-4 overflow-hidden">
+                  <div className="card-header text-white fs-4 fw-semibold">
+                    Container #{containerId}
+                  </div>
+                  <div className="card-body bg-dark">
+                    <Container
+                      id={containerId}
+                      rackIds={containersRacksCount[containerId]}
+                      onDeleteRack={(rackId) => deleteRack(containerId, rackId)}
+                    />
+                  </div>
+                  <div className="card-footer bg-dark d-flex justify-content-between">
+                    <DeleteContainerButton
+                      id={containerId}
+                      onDeleteContainer={(id) => deleteContainer(id)}
+                    />
+                    <AddRackButton
+                      containerId={containerId}
+                      onAddRack={(rackId) => addRack(containerId, rackId)}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         <div className="d-flex justify-content-center mt-5 gap-3">

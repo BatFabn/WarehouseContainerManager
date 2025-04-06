@@ -8,7 +8,7 @@ const NavBar = () => {
         <div className="container-fluid">
           <Link
             className="navbar-brand"
-            to="/dashboard"
+            to={`/dashboard`}
             style={{
               color: "#ffb2a5",
               fontWeight: "600",
@@ -33,10 +33,13 @@ const NavBar = () => {
           </button>
           <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div className="navbar-nav ms-auto text-center">
-              <Link className="nav-link px-3" to="/dashboard">
+              <Link className="nav-link px-3" to={`/dashboard`}>
                 Home
               </Link>
-              <Link className="nav-link px-3" to="/members">
+              <Link className="nav-link px-3" to="/account">
+                Accounts
+              </Link>
+              <Link className="nav-link px-3" to={`/members`}>
                 Members
               </Link>
               <Link

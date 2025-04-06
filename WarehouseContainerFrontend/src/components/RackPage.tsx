@@ -3,11 +3,13 @@ import NavBar from "./NavBar";
 import RealTimeGraph from "./RealTimeChart";
 import { useEffect, useState } from "react";
 import { useContainerRackState } from "../store/containerRackState";
+import { useCurrentActor } from "../store/currentActor";
 
 const RackPage = () => {
   const { containerId, rackId } = useParams();
   const [status, setStatus] = useState<string>("success");
   const { getContainerRackState } = useContainerRackState();
+  const { getCurrentActor } = useCurrentActor();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,6 +35,7 @@ const RackPage = () => {
   return (
     <div className={`text-center bg-${status}`}>
       <NavBar />
+      <h1>Acting as {getCurrentActor()}</h1>
       <h2>Container #{containerId}</h2>
       <h1>Rack #{rackId}</h1>
       <RealTimeGraph queryContainerId={containerId!} queryRackId={rackId!} />
