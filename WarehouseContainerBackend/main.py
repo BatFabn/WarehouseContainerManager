@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from typing import Optional
-from fastapi import FastAPI, File, Form, UploadFile, Request
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from image_predict import process_image
@@ -10,6 +10,8 @@ import json
 import os
 import io
 import redis
+import smtplib
+from email.message import EmailMessage
 
 app = FastAPI()
 
@@ -23,6 +25,12 @@ try:
     print("✅ Redis connection successful!")
 except redis.ConnectionError as e:
     print(f"❌ Redis connection failed: {e}")
+
+
+SMTP_HOST = os.getenv("SMTP_HOST")
+SMTP_PORT = int(os.getenv("SMTP_PORT"))
+SMTP_SENDER = os.getenv("SMTP_SENDER")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 
 
 async def get_redis_publisher():
@@ -150,4 +158,32 @@ async def receive_data(request: Request):
     redis_pub.publish("sensor_data", json.dumps(message))
     redis_pub.close()
 
+    if message["status"] in ["Early Spoilage", "Spoiled"]:
+        send_spoilage_notification(data.get("email", ""), data.get(
+            "fruit"), message["status"], data.get("container_id", ""), data["rack_id"], data["timestamp"])
     return JSONResponse(content={"status": "success", "message": "Data received!"}, status_code=200)
+
+
+def send_spoilage_notification(to_email: str, fruit: str, status: str, container: str, rack: str, datetime: str):
+    if not to_email or to_email.strip() == "":
+        raise HTTPException(
+            status_code=400, detail="Recipient email is empty.")
+    if not container or container.strip() == "":
+        raise HTTPException(status_code=400, detail="Container id is empty.")
+    subject = f"⚠️ Spoilage Alert - Container #{container} Rack #{rack}"
+    body = f"The system has detected that {fruit} in container #{container} and rack #{rack} is {status}. Please take necessary action."
+
+    msg = EmailMessage()
+    msg["From"] = SMTP_SENDER
+    msg["To"] = to_email
+    msg["Subject"] = subject
+    msg.set_content(body)
+
+    try:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SMTP_SENDER, SMTP_PASSWORD)
+            server.send_message(msg)
+            print("Email sent successfully.")
+    except Exception as e:
+        print(f"Failed to send email: {e}")

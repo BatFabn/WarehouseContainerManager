@@ -20,7 +20,7 @@ async def send_sensor_data():
     async with httpx.AsyncClient() as client:
         while True:
             # Simulate sensor data
-            sensor_data["email"] = "john.doe@example.com"
+            sensor_data["email"] = "romanreigns397@gmail.com"
             sensor_data["fruit"] = "apple"
             sensor_data["container_id"] = "3"
             sensor_data["rack_id"] = "2"

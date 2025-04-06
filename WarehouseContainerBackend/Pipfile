@@ -20,6 +20,8 @@ pyjwt = "*"
 pydantic = {extras = ["email"], version = "*"}
 bcrypt = "==4.0.1"
 passlib = {extras = ["bcrypt"], version = "*"}
+update = "*"
+mailersend = "*"
 
 [dev-packages]
 httpx = "*"
