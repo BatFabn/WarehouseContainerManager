@@ -167,7 +167,8 @@ async def get_rack_data(
     """Retrieve documents matching rack_id and container_id."""
     COLLECTION_NAME = "sensor_data"
     collection = db[COLLECTION_NAME]
-    unique_combos = await collection.find({"email": email}).aggregate([
+    unique_combos = await collection.aggregate([
+        {"$match": {"email": email}},
         {"$group": {"_id": {"container_id": "$container_id", "rack_id": "$rack_id"}}}
     ]).to_list(None)
 

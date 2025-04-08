@@ -1,10 +1,11 @@
+from fastapi import Request
 import asyncio
 import random
 import requests
 import os
 import cv2
 import base64
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from dotenv import load_dotenv
 
 app = FastAPI()
@@ -43,6 +44,7 @@ async def send_sensor_data():
             image_b64 = capture_image_base64(cap)
 
             async with sensor_lock:
+                sensor_data["email"] = "fsaad@gmail.com"
                 sensor_data["container_id"] = "3"
                 sensor_data["rack_id"] = "2"
                 sensor_data["temperature"] = round(random.uniform(
@@ -65,15 +67,31 @@ async def send_sensor_data():
         cap.release()
 
 
-@app.on_event("startup")
-async def start_background_tasks():
-    asyncio.create_task(send_sensor_data())
+# @app.on_event("startup")
+# async def start_background_tasks():
+#     asyncio.create_task(send_sensor_data())
 
 
 @app.post("/sensor")
 async def receive_sensor_data(data: dict):
+    cap = cv2.VideoCapture(1)
+    if not cap.isOpened():
+        print("❌ Could not open webcam.")
+        return {"message": "Webcam not available"}
+
+    print("📸 Capturing image for received data...")
+
+    image_b64 = capture_image_base64(cap)
+    cap.release()
+
     async with sensor_lock:
-        sensor_data.update(data)
+        sensor_data["container_id"] = data.get("container_id", "3")
+        sensor_data["rack_id"] = data.get("rack_id", "2")
+        sensor_data["temperature"] = data.get("temperature", 0.0)
+        sensor_data["humidity"] = data.get("humidity", 0.0)
+        sensor_data["methane"] = data.get("methane", 0.0)
+        sensor_data["image"] = image_b64 or ""
+
     return {"message": "Data received successfully", "data": sensor_data}
 
 
