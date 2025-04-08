@@ -1,3 +1,4 @@
+import base64
 from datetime import datetime, timezone
 from typing import Optional
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Request
@@ -32,6 +33,8 @@ SMTP_PORT = int(os.getenv("SMTP_PORT"))
 SMTP_SENDER = os.getenv("SMTP_SENDER")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 
+status = {}
+
 
 async def get_redis_publisher():
     return redis.Redis(
@@ -40,7 +43,7 @@ async def get_redis_publisher():
 
 
 class ResponseData(BaseModel):
-    fruit: str
+    fruit: dict[str, str] | str
     image: dict[str, int] | str
     metrics: dict[str, str]
 
@@ -102,7 +105,7 @@ def process_data(image: bytes | None, metrics: Metrics | None):
     else:
         fruit_status = "Unknown"
 
-    return ResponseData(fruit=fruit_index_name[fruit_idx], image=fruit_count, metrics={"status": fruit_status})
+    return ResponseData(fruit={"fruit": fruit_index_name[fruit_idx]} if image else {"fruit": metrics["fruit"]}, image=fruit_count, metrics={"status": fruit_status})
 
 
 @app.post("/predict", response_model=ResponseData)
@@ -143,7 +146,8 @@ async def receive_data(request: Request):
     data = await request.json()
     data["timestamp"] = datetime.now(timezone.utc).isoformat()
     result = process_data(
-        None,
+        base64.b64decode(data.get("image", None)) if data.get(
+            "image", None) else None,
         Metrics(
             fruit=data.get("fruit", None),
             temperature=data.get("temperature", None),
@@ -152,13 +156,16 @@ async def receive_data(request: Request):
         ),
     )
     result = result.model_dump()
-    message = {**data, **result["metrics"],
+    message = {**data, **result["fruit"], **result["metrics"],
                **(result["image"] if isinstance(result["image"], dict) else {"image": result["image"]})}
     redis_pub = await get_redis_publisher()
     redis_pub.publish("sensor_data", json.dumps(message))
     redis_pub.close()
 
-    if message["status"] in ["Early Spoilage", "Spoiled"]:
+    if not status.get((data.get("email"), data.get("conatiner_id"), data.get("rack_id")), None):
+        status[(data.get("email"), data.get("conatiner_id"),
+                data.get("rack_id"))] = "Fresh"
+    elif status[(data.get("email"), data.get("conatiner_id"), data.get("rack_id"))] != message["status"] and message["status"] in ["Early Spoilage", "Spoiled"]:
         send_spoilage_notification(data.get("email", ""), data.get(
             "fruit"), message["status"], data.get("container_id", ""), data["rack_id"], data["timestamp"])
     return JSONResponse(content={"status": "success", "message": "Data received!"}, status_code=200)

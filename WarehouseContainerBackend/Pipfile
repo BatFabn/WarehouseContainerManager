@@ -17,11 +17,9 @@ uvicorn = {extras = ["standard"], version = "*"}
 certifi = "*"
 python-jose = {extras = ["cryptography"], version = "*"}
 pyjwt = "*"
-pydantic = {extras = ["email"], version = "*"}
 bcrypt = "==4.0.1"
 passlib = {extras = ["bcrypt"], version = "*"}
-update = "*"
-mailersend = "*"
+pydantic = {extras = ["email"], version = "*"}
 
 [dev-packages]
 httpx = "*"
