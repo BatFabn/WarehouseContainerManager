@@ -30,7 +30,7 @@ def process_image(image_o):
     image = cv2.cvtColor(image_array, cv2.COLOR_RGB2BGR)
     # image = cv2.imread(image_path)
 
-    results = detection_model(image, conf=0.37)
+    results = detection_model(image, conf=0.5)
 
     fruit_count = {"Fresh_apples": 0,  "Fresh_bananas": 0,
                    "Fresh_oranges": 0, "Spoiled_apples": 0, "Spoiled_bananas": 0, "Spoiled_oranges": 0}
@@ -58,11 +58,12 @@ def process_image(image_o):
             # cv2.putText(image, label_map[pred], (x1, y1 - 10),
             #             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-    return fruit_count
+    # return fruit_count
     # print(fruit_count)
     # cv2.imshow("Detected Fruits", image)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
 
-# image_path = "orange.png"
-# process_image(image_path)
+
+# image_path = r"C:\Users\user\Projects\WarehouseContainerFrontend\WarehouseContainerBackend\captured_images\20250409_021609.jpg"
+# process_image(Image.open(image_path).convert("RGB"))

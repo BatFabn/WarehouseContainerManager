@@ -31,7 +31,7 @@ def capture_image_base64(cap):
     return base64_str
 
 
-async def send_sensor_data():
+async def send_sensor_data(data):
     cap = cv2.VideoCapture(1)
     if not cap.isOpened():
         print("❌ Could not open webcam.")
@@ -44,13 +44,12 @@ async def send_sensor_data():
             image_b64 = capture_image_base64(cap)
 
             async with sensor_lock:
-                sensor_data["email"] = "fsaad@gmail.com"
+                sensor_data["email"] = "romanreigns397@gmail.com"
                 sensor_data["container_id"] = "3"
                 sensor_data["rack_id"] = "2"
-                sensor_data["temperature"] = round(random.uniform(
-                    18, 21) if random.random() < 0.5 else random.uniform(27, 30), 2)
-                sensor_data["humidity"] = round(random.uniform(70, 85), 2)
-                sensor_data["methane"] = round(random.uniform(1.5, 3.5), 3)
+                sensor_data["temperature"] = data.get("temperature", 0.0)
+                sensor_data["humidity"] = data.get("humidity", 0.0)
+                sensor_data["methane"] = data.get("methane", 0.0)
                 sensor_data["image"] = image_b64 or ""
 
                 data_to_send = sensor_data.copy()
@@ -74,23 +73,39 @@ async def send_sensor_data():
 
 @app.post("/sensor")
 async def receive_sensor_data(data: dict):
-    cap = cv2.VideoCapture(1)
-    if not cap.isOpened():
-        print("❌ Could not open webcam.")
-        return {"message": "Webcam not available"}
+    asyncio.create_task(send_sensor_data(data))
+    # print(data)
+    # cap = cv2.VideoCapture(1)
+    # if not cap.isOpened():
+    #     print("❌ Could not open webcam.")
+    #     return {"message": "Webcam not available"}
 
-    print("📸 Capturing image for received data...")
+    # print("📸 Capturing image for received data...")
 
-    image_b64 = capture_image_base64(cap)
-    cap.release()
+    # image_b64 = capture_image_base64(cap)
+    # cap.release()
 
-    async with sensor_lock:
-        sensor_data["container_id"] = data.get("container_id", "3")
-        sensor_data["rack_id"] = data.get("rack_id", "2")
-        sensor_data["temperature"] = data.get("temperature", 0.0)
-        sensor_data["humidity"] = data.get("humidity", 0.0)
-        sensor_data["methane"] = data.get("methane", 0.0)
-        sensor_data["image"] = image_b64 or ""
+    # try:
+    #     while True:
+    #         image_b64 = capture_image_base64(cap)
+    #         async with sensor_lock:
+    #             sensor_data["email"] = "romanreigns397@gmail.com"
+    #             sensor_data["container_id"] = data.get("container_id", "3")
+    #             sensor_data["rack_id"] = data.get("rack_id", "2")
+    #             sensor_data["temperature"] = data.get("temperature", 0.0)
+    #             sensor_data["humidity"] = data.get("humidity", 0.0)
+    #             sensor_data["methane"] = data.get("methane", 0.0)
+    #             sensor_data["image"] = image_b64 or ""
+
+    #             data_to_send = sensor_data.copy()
+
+    #         print("📤 Posting sensor data...")
+    #         try:
+    #             requests.post(ENDPOINT, json=data_to_send)
+    #         except Exception as e:
+    #             print(f"Error sending data: {e}")
+    # finally:
+    #     cap.release()
 
     return {"message": "Data received successfully", "data": sensor_data}
 

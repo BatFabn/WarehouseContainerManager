@@ -44,7 +44,7 @@ async def get_redis_publisher():
 
 class ResponseData(BaseModel):
     fruit: dict[str, str] | str
-    image: dict[str, int] | str
+    image: dict[str, int] | str | None
     metrics: dict[str, str]
 
 
@@ -77,17 +77,18 @@ def process_data(image: bytes | None, metrics: Metrics | None):
     if image:
         img = Image.open(io.BytesIO(image))
         fruit_count = process_image(img)
-        if fruit_idx == -1:
-            max_key = max(fruit_count, key=fruit_count.get)
-            fruit_idx = fruit_index_value.get(max_key.split(
-                "_")[1][:-1], -1)
-        else:
-            # Filter keys if fruit is specified in metrics since it must be the fruit of focus
-            items = {k: v for k, v in fruit_count.items()
-                     if metrics.fruit in k and v > 0}
-            max_key = max(items, key=items.get) if items else None
-        fruit_status_image = max_key.split(
-            "_")[0] if max_key else fruit_status_image
+        if fruit_count:
+            if fruit_idx == -1:
+                max_key = max(fruit_count, key=fruit_count.get)
+                fruit_idx = fruit_index_value.get(max_key.split(
+                    "_")[1][:-1], -1)
+            else:
+                # Filter keys if fruit is specified in metrics since it must be the fruit of focus
+                items = {k: v for k, v in fruit_count.items()
+                         if metrics.fruit in k and v > 0}
+                max_key = max(items, key=items.get) if items else None
+            fruit_status_image = max_key.split(
+                "_")[0] if max_key else fruit_status_image
 
     if metrics and None not in [metrics.temperature, metrics.humidity, metrics.methane]:
         fruit_status_metrics = "Missing metrics" if fruit_idx not in [0, 1, 2] else process_num_inputs(
@@ -99,11 +100,11 @@ def process_data(image: bytes | None, metrics: Metrics | None):
     elif fruit_status_image == "Spoiled" or fruit_status_metrics == "Spoiled":
         fruit_status = "Spoiled"
     elif fruit_status_image == "Missing image" and fruit_status_metrics == "Missing metrics":
-        fruit_status = "Missing image and metrics"
+        fruit_status = "Fresh"
     elif fruit_status_image == "Fresh" or fruit_status_metrics == "Fresh":
         fruit_status = "Fresh"
     else:
-        fruit_status = "Unknown"
+        fruit_status = "Fresh"
 
     return ResponseData(fruit={"fruit": fruit_index_name[fruit_idx]} if image else {"fruit": metrics["fruit"]}, image=fruit_count, metrics={"status": fruit_status})
 

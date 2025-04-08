@@ -331,6 +331,12 @@ async def remove_allowed_user(owner_email: EmailStr, target_user_email: EmailStr
             status_code=404, detail="User not found or already removed")
     return {"message": "Allowed user removed"}
 
+
+@app.get("/")
+def home():
+    return {"status": "ok"}
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
